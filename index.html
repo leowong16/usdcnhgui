@@ -25,12 +25,12 @@
             bottom: 0;
             /* 将时间放置在底部 */
             left: 50%;
-            transform: translateX(-60%);
+            transform: translateX(-55%);
             font-size: 8vw;
             color: #f0f0f0cd;
             /* 浅白色字体 */
             z-index: 1;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             white-space: nowrap;
             text-align: center;
         }
@@ -57,7 +57,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            margin-bottom: 60px;
+            margin-bottom: 50px;
             margin-top: 5px;
             margin-left: 5px;
             margin-right: 5px;
@@ -88,17 +88,17 @@
         }
 
         .up {
-            color: #FF7043;
+            color: #ff6f43b1;
             /* 柔和的红色 */
         }
 
         .down {
-            color: #66BB6A;
+            color: #66bb6ab9;
             /* 柔和的绿色 */
         }
 
         .no-change {
-            color: #B0BEC5;
+            color: #b0bec5bd;
             /* 中性色，表示无变化 */
         }
     </style>
@@ -162,11 +162,11 @@
             document.getElementById("exchange-rate").textContent = formattedRate;
 
             // 汇率变化的颜色
-            let rateColor = '#F0F0F0'; // 默认白色
+            let rateColor = '#b0bec5bd'; // 默认白色
             if (ratio > 0) {
-                rateColor = '#FF7043'; // 红色上涨
+                rateColor = '#ff6f43b1'; // 红色上涨
             } else if (ratio < 0) {
-                rateColor = '#66BB6A'; // 绿色下跌
+                rateColor = '#66bb6ab9'; // 绿色下跌
             }
 
             document.getElementById("exchange-rate").style.color = rateColor;
