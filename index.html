@@ -24,7 +24,7 @@
             left: 50%;
             transform: translateX(-55%);
             font-size: 8vw;
-            color: #f0f0f0b2;
+            color: #f0f0f07e;
             z-index: 1;
             margin-bottom: 0px;
             white-space: nowrap;
@@ -36,7 +36,7 @@
             position: absolute;
             top: 50%;
             left: 50%;
-            transform: translate(-45%, -70%);
+            transform: translate(-45%, -60%);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -153,11 +153,11 @@
             const formattedRate = currentRate.toFixed(4);
             document.getElementById("exchange-rate").textContent = formattedRate;
 
-            let rateColor = '#b0bec5bd'; // 默认白色
+            let rateColor = '#ffffff75'; // 默认白色
             if (ratio > 0) {
-                rateColor = '#f243ffb1'; // 红色上涨
+                rateColor = '#f243ff71'; // 红色上涨
             } else if (ratio < 0) {
-                rateColor = '#66bb6ab9'; // 绿色下跌
+                rateColor = '#66bb6a7c'; // 绿色下跌
             }
 
             document.getElementById("exchange-rate").style.color = rateColor;
