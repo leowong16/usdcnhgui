@@ -18,15 +18,19 @@
         }
 
         /* 时间显示区域，固定在顶部 */
-        .update-time {
-            position: fixed;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 50px;
-            z-index: 1; /* 时间在图表之上 */
-            margin-top: 10px;
-        }
+.update-time {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 5vw; /* 使用视口宽度单位，使字体根据屏幕大小自适应 */
+    z-index: 1; /* 时间在图表之上 */
+    margin-top: 10px;
+    white-space: nowrap; /* 防止时间显示换行 */
+    max-width: 100%; /* 保证不超出屏幕宽度 */
+    text-align: center;
+}
+
 
         /* 汇率显示区域 */
         .rate-container {
