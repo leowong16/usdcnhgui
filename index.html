@@ -11,31 +11,29 @@
             margin: 0;
             padding: 0;
             text-align: center;
-            background-color: #000;
-            color: #fff;
+            background-color: #121212;
+            /* 深灰色背景 */
+            color: #E0E0E0;
+            /* 浅灰色字体 */
             overflow: hidden;
             height: 100vh;
-            /* 确保页面高度占满整个视口 */
         }
 
-        /* 时间显示区域，固定在顶部 */
+        /* 时间显示区域，修改为固定在底部 */
         .update-time {
             position: fixed;
-            top: 0;
+            bottom: 0;
+            /* 将时间放置在底部 */
             left: 50%;
             transform: translateX(-50%);
             font-size: 7vw;
-            /* 使用视口宽度单位，使字体根据屏幕大小自适应 */
+            color: #f0f0f0cd;
+            /* 浅白色字体 */
             z-index: 1;
-            /* 时间在图表之上 */
-            margin-top: 1px;
+            margin-bottom: 10px;
             white-space: nowrap;
-            /* 防止时间显示换行 */
-            max-width: 100%;
-            /* 保证不超出屏幕宽度 */
             text-align: center;
         }
-
 
         /* 汇率显示区域 */
         .rate-container {
@@ -43,16 +41,13 @@
             top: 50%;
             left: 50%;
             transform: translate(-45%, -50%);
-            /* 将汇率区域移动到屏幕中央 */
             display: flex;
             justify-content: center;
             align-items: center;
             font-size: 140px;
-            /* 放大字体 */
             font-weight: bold;
             padding: 20px;
             z-index: 0;
-            /* 汇率区域在底层 */
         }
 
         /* 图表区域 */
@@ -61,21 +56,16 @@
             top: 0;
             left: 0;
             width: 100%;
-            margin-top: 60px;
-            margin-bottom: 1px;
-            margin-left: 1px;
-            margin-right: 10px;
             height: 100%;
-            z-index: 2;
-            /* 图表位于汇率之上 */
-            background-color: rgba(0, 0, 0, 0);
+            margin-bottom: 60px;
+            background-color: rgba(0, 0, 0, 0.05);
             /* 图表背景透明 */
+            z-index: 2;
         }
 
         @media (max-width: 480px) {
             .rate {
                 font-size: 60px;
-                /* 在小屏幕上调整字体大小 */
             }
 
             .update-time {
@@ -95,18 +85,18 @@
         }
 
         .up {
-            color: rgba(235, 0, 0, 0.5);
-            /* 红色箭头，70%透明 */
+            color: #FF7043;
+            /* 柔和的红色 */
         }
 
         .down {
-            color: rgba(32, 211, 0, 0.5);
-            /* 绿色箭头，70%透明 */
+            color: #66BB6A;
+            /* 柔和的绿色 */
         }
 
         .no-change {
-            color: rgba(222, 222, 222, 0.5);
-            /* 白色箭头，70%透明 */
+            color: #B0BEC5;
+            /* 中性色，表示无变化 */
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -168,20 +158,19 @@
             const formattedRate = currentRate.toFixed(4);
             document.getElementById("exchange-rate").textContent = formattedRate;
 
-            // Set exchange rate color based on ratio, with transparency for font color
-            let rateColor = 'rgba(222, 222, 222, 0.6)'; // Default white with 70% opacity (transparent)
+            // 汇率变化的颜色
+            let rateColor = '#F0F0F0'; // 默认白色
             if (ratio > 0) {
-                rateColor = 'rgba(235, 0, 0, 0.5)'; // Red for increase with transparency
+                rateColor = '#FF7043'; // 红色上涨
             } else if (ratio < 0) {
-                rateColor = 'rgba(32, 211, 0, 0.5)'; // Green for decrease with transparency
+                rateColor = '#66BB6A'; // 绿色下跌
             }
 
-            // Update the exchange rate color with transparency
             document.getElementById("exchange-rate").style.color = rateColor;
 
-            // Update arrow color based on rate change (up/down/no change)
-            let rateArrowClass = 'no-change'; // Default to no change
-            let arrowSymbol = '-'; // Default to no arrow
+            // 设置箭头
+            let rateArrowClass = 'no-change'; // 默认无变化
+            let arrowSymbol = '-'; // 默认箭头为无
 
             if (lastRate !== null) {
                 if (currentRate > lastRate) {
@@ -196,7 +185,7 @@
                 }
             }
 
-            // Update the arrow color
+            // 更新箭头颜色
             document.getElementById("rate-arrow").className = `arrow ${rateArrowClass}`;
             document.getElementById("rate-arrow").innerHTML = arrowSymbol;
 
@@ -263,7 +252,7 @@
                     labels: times, // Only time will be displayed
                     datasets: [{
                         data: prices,
-                        borderColor: 'rgba(75, 192, 192,0.8)',
+                        borderColor: '#64B5F6', // 柔和蓝色
                         borderWidth: 2,
                         fill: false, // Only the line is visible, background transparent
                         tension: 0.1,
@@ -279,7 +268,7 @@
                             ticks: {
                                 autoSkip: true,
                                 maxTicksLimit: 3, // Increase the number of ticks
-                                color: 'rgba(211, 211, 211, 0.6)',
+                                color: '#B0BEC5', // 淡灰色
                                 font: {
                                     family: 'Arial, sans-serif',
                                     size: 20,
@@ -295,7 +284,7 @@
                                 callback: function (value) {
                                     return value.toFixed(2);
                                 },
-                                color: 'rgba(211, 211, 211, 0.6)',
+                                color: '#B0BEC5', // 淡灰色
                                 font: {
                                     family: 'Arial, sans-serif',
                                     size: 20,
