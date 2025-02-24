@@ -42,12 +42,12 @@
             position: absolute;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%);
+            transform: translate(-45%, -50%);
             /* 将汇率区域移动到屏幕中央 */
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 130px;
+            font-size: 140px;
             /* 放大字体 */
             font-weight: bold;
             padding: 20px;
@@ -88,24 +88,24 @@
         }
 
         .arrow {
-            font-size: 130px;
+            font-size: 140px;
             font-weight: bold;
             margin-left: 10px;
             vertical-align: middle;
         }
 
         .up {
-            color: rgba(251, 50, 50, 0.6);
+            color: rgba(235, 0, 0, 0.5);
             /* 红色箭头，70%透明 */
         }
 
         .down {
-            color: rgba(105, 247, 105, 0.6);
+            color: rgba(32, 211, 0, 0.5);
             /* 绿色箭头，70%透明 */
         }
 
         .no-change {
-            color: rgba(211, 211, 211, 0.6);
+            color: rgba(222, 222, 222, 0.5);
             /* 白色箭头，70%透明 */
         }
     </style>
@@ -169,11 +169,11 @@
             document.getElementById("exchange-rate").textContent = formattedRate;
 
             // Set exchange rate color based on ratio, with transparency for font color
-            let rateColor = 'rgba(211, 211, 211, 0.6)'; // Default white with 70% opacity (transparent)
+            let rateColor = 'rgba(222, 222, 222, 0.6)'; // Default white with 70% opacity (transparent)
             if (ratio > 0) {
-                rateColor = 'rgba(251, 50, 50, 0.6)'; // Red for increase with transparency
+                rateColor = 'rgba(235, 0, 0, 0.5)'; // Red for increase with transparency
             } else if (ratio < 0) {
-                rateColor = 'rgba(105, 247, 105, 0.6)'; // Green for decrease with transparency
+                rateColor = 'rgba(32, 211, 0, 0.5)'; // Green for decrease with transparency
             }
 
             // Update the exchange rate color with transparency
