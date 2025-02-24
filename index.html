@@ -14,22 +14,27 @@
             background-color: #000;
             color: #fff;
             overflow: hidden;
-            height: 100vh; /* 确保页面高度占满整个视口 */
+            height: 100vh;
+            /* 确保页面高度占满整个视口 */
         }
 
         /* 时间显示区域，固定在顶部 */
-.update-time {
-    position: fixed;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 8vw; /* 使用视口宽度单位，使字体根据屏幕大小自适应 */
-    z-index: 1; /* 时间在图表之上 */
-    margin-top: 5px;
-    white-space: nowrap; /* 防止时间显示换行 */
-    max-width: 100%; /* 保证不超出屏幕宽度 */
-    text-align: center;
-}
+        .update-time {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 8vw;
+            /* 使用视口宽度单位，使字体根据屏幕大小自适应 */
+            z-index: 1;
+            /* 时间在图表之上 */
+            margin-top: 5px;
+            white-space: nowrap;
+            /* 防止时间显示换行 */
+            max-width: 100%;
+            /* 保证不超出屏幕宽度 */
+            text-align: center;
+        }
 
 
         /* 汇率显示区域 */
@@ -37,14 +42,17 @@
             position: absolute;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%); /* 将汇率区域移动到屏幕中央 */
+            transform: translate(-50%, -50%);
+            /* 将汇率区域移动到屏幕中央 */
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 150px; /* 放大字体 */
+            font-size: 150px;
+            /* 放大字体 */
             font-weight: bold;
             padding: 20px;
-            z-index: 0; /* 汇率区域在底层 */
+            z-index: 0;
+            /* 汇率区域在底层 */
         }
 
         /* 图表区域 */
@@ -58,13 +66,16 @@
             margin-left: 5px;
             margin-right: 5px;
             height: 100%;
-            z-index: 2; /* 图表位于汇率之上 */
-            background-color: rgba(0, 0, 0, 0); /* 图表背景透明 */
+            z-index: 2;
+            /* 图表位于汇率之上 */
+            background-color: rgba(0, 0, 0, 0);
+            /* 图表背景透明 */
         }
 
         @media (max-width: 480px) {
             .rate {
-                font-size: 60px; /* 在小屏幕上调整字体大小 */
+                font-size: 60px;
+                /* 在小屏幕上调整字体大小 */
             }
 
             .update-time {
@@ -84,15 +95,18 @@
         }
 
         .up {
-            color: rgba(255, 17, 0, 0.4); /* 红色箭头，70%透明 */
+            color: rgba(251, 50, 50, 0.6);
+            /* 红色箭头，70%透明 */
         }
 
         .down {
-            color: rgba(3, 204, 16, 0.4); /* 绿色箭头，70%透明 */
+            color: rgba(105, 247, 105, 0.6);
+            /* 绿色箭头，70%透明 */
         }
 
         .no-change {
-            color: rgba(255, 255, 255, 0.4); /* 白色箭头，70%透明 */
+            color: rgba(211, 211, 211, 0.6);
+            /* 白色箭头，70%透明 */
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -155,11 +169,11 @@
             document.getElementById("exchange-rate").textContent = formattedRate;
 
             // Set exchange rate color based on ratio, with transparency for font color
-            let rateColor = 'rgba(255, 255, 255, 0.4)'; // Default white with 70% opacity (transparent)
+            let rateColor = 'rgba(211, 211, 211, 0.6)'; // Default white with 70% opacity (transparent)
             if (ratio > 0) {
-                rateColor = 'rgba(255, 17, 0, 0.4)'; // Red for increase with transparency
+                rateColor = 'rgba(251, 50, 50, 0.6)'; // Red for increase with transparency
             } else if (ratio < 0) {
-                rateColor = 'rgba(3, 204, 16, 0.4)'; // Green for decrease with transparency
+                rateColor = 'rgba(105, 247, 105, 0.6)'; // Green for decrease with transparency
             }
 
             // Update the exchange rate color with transparency
@@ -261,7 +275,7 @@
                     maintainAspectRatio: false,
                     scales: {
                         x: {
-                            grid:{display:false},
+                            grid: { display: false },
                             ticks: {
                                 autoSkip: true,
                                 maxTicksLimit: 3, // Increase the number of ticks
@@ -276,7 +290,7 @@
                         y: {
                             min: Math.min(...prices),
                             max: Math.max(...prices),
-                            grid:{display:false},
+                            grid: { display: false },
                             ticks: {
                                 stepSize: (Math.max(...prices) - Math.min(...prices)) / 2,
                                 callback: function (value) {
