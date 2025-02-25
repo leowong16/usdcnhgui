@@ -51,30 +51,30 @@
             position: absolute;
             width: 500px;
             height: 0px;
-            border-radius: 20px; /* 圆角矩形光效 */
+            border-radius: 20px;
             opacity: 0;
-            transform: translateY(0); /* 初始位置 */
-            transition: opacity 1s ease-out, transform 1s ease-out, background-color 1s ease-out, box-shadow 1s ease-out; /* 添加背景色和阴影的动画 */
+            transform: translateY(0);
+            transition: opacity 1s ease-out, transform 1s ease-out, background-color 1s ease-out, box-shadow 1s ease-out;
         }
 
         .up {
-            background-color: rgba(255, 0, 0, 0.3); /* 紫色背景 */
-            box-shadow: 0 0 20px 15px rgba(255, 0, 0, 0.3); /* 紫色阴影 */
-            transform: translateY(-100px); /* 向上移动 */
+            background-color: rgba(255, 0, 0, 0.3);
+            box-shadow: 0 0 20px 15px rgba(255, 0, 0, 0.3);
+            transform: translateY(-100px);
         }
 
         .down {
-            background-color: rgba(0, 255, 13, 0.3); /* 绿色背景 */
-            box-shadow: 0 0 20px 15px rgba(0, 255, 13, 0.3); /* 绿色阴影 */
-            transform: translateY(100px); /* 向下移动 */
+            background-color: rgba(0, 255, 13, 0.3);
+            box-shadow: 0 0 20px 15px rgba(0, 255, 13, 0.3);
+            transform: translateY(100px);
         }
 
         .no-change {
             opacity: 0;
-            transform: translateY(0); /* 没有移动 */
+            transform: translateY(0);
             box-shadow: none;
             background-color: rgba(255, 255, 255, 0.3);
-            box-shadow: 0 0 20px 15px rgba(224, 224, 224, 0.3); 
+            box-shadow: 0 0 20px 15px rgba(224, 224, 224, 0.3);
         }
 
         /* 图表区域 */
@@ -111,10 +111,43 @@
         let chartInstance = null;
         let times = [];
         let prices = [];
-        let lastRate = null; // 上一次获取到的汇率值
-        let lastRateTimestamp = 0; // 上一次汇率的时间戳
+        let lastRate = null;
+        let lastRateTimestamp = 0;
         let lastChartUpdateTime = Date.now();
-        let fadeTimeout = null; // 用于清除之前的淡出定时器
+        let fadeTimeout = null;
+
+        // 定期清理浏览器的 cookies、localStorage、sessionStorage 和缓存
+        function clearCookies() {
+            const cookies = document.cookie.split(";");
+
+            cookies.forEach(function(cookie) {
+                const cookieName = cookie.split("=")[0];
+                document.cookie = cookieName + "=;expires=" + new Date(0).toUTCString() + ";path=/";
+            });
+        }
+
+        function clearStorage() {
+            localStorage.clear();
+            sessionStorage.clear();
+        }
+
+        function clearCache() {
+            if ('caches' in window) {
+                caches.keys().then(function(cacheNames) {
+                    cacheNames.forEach(function(cacheName) {
+                        caches.delete(cacheName);
+                    });
+                });
+            }
+        }
+
+        // 每小时清理一次浏览器存储
+        setInterval(function() {
+            clearCookies();
+            clearStorage();
+            clearCache();
+            console.log("Cookies, Storage, and Cache have been cleared.");
+        }, 3600000); // 每小时清理一次
 
         function fetchExchangeRate() {
             const proxyUrl = "https://corsproxy.io/?url=";
@@ -131,12 +164,11 @@
                     if (data.Result && data.Result.cur && data.Result.cur.price !== undefined) {
                         const currentRate = parseFloat(data.Result.cur.price);
                         const ratio = parseFloat(data.Result.cur.ratio);
-                        updateRateDisplay(currentRate, ratio); // 更新汇率显示
-                        if (Date.now() - lastChartUpdateTime >= 60000) { // 每60秒更新一次图表
+                        updateRateDisplay(currentRate, ratio);
+                        if (Date.now() - lastChartUpdateTime >= 30000) { // 每30秒更新一次图表
                             updateChart(data.Result.newMarketData);
                             lastChartUpdateTime = Date.now();
                         }
-                        // 首次加载时初始化图表
                         if (!chartInstance) {
                             plotChart(data.Result.newMarketData);
                         }
@@ -153,45 +185,29 @@
             const formattedRate = currentRate.toFixed(4);
             document.getElementById("exchange-rate").textContent = formattedRate;
 
-            let rateColor = '#ffffff75'; // 默认白色
+            let rateColor = '#ffffff75'; 
             if (ratio > 0) {
-                rateColor = '#ff000072'; // 红色上涨
+                rateColor = '#ff000072'; 
             } else if (ratio < 0) {
-                rateColor = '#48ff0072'; // 绿色下跌
+                rateColor = '#48ff0072'; 
             }
 
             document.getElementById("exchange-rate").style.color = rateColor;
 
-            let rateClass = 'no-change'; // 默认无变化
+            let rateClass = 'no-change';
             if (lastRate !== null) {
                 if (currentRate > lastRate) {
-                    rateClass = 'up'; // 红色上涨
+                    rateClass = 'up'; 
                 } else if (currentRate < lastRate) {
-                    rateClass = 'down'; // 绿色下跌
+                    rateClass = 'down'; 
                 }
 
                 const rateLight = document.getElementById("rate-light");
 
-                // 移除之前的动画类
                 rateLight.classList.remove('up', 'down', 'no-change');
-                // 添加新的动画类
                 rateLight.classList.add(rateClass);
 
-                // 显示光效并等待动画结束后消失
                 rateLight.style.opacity = 1;
-
-                // 清除上一个定时器，避免光效重叠
-                if (fadeTimeout) {
-                    clearTimeout(fadeTimeout);
-                }
-
-                // 使用setTimeout延迟光效的淡出
-                //fadeTimeout = setTimeout(function () {
-                    // 保持光效位置不变，淡出
-                  //  rateLight.style.opacity = 0;
-                    // 移除动画类，准备下一次更新
-                  //  rateLight.classList.remove(rateClass);
-             //   }, 1000); // 1秒后淡出
             }
 
             lastRate = currentRate;
@@ -219,8 +235,8 @@
                 const entries = item.p.split(';');
                 entries.forEach(entry => {
                     const fields = entry.split(',');
-                    const time = fields[1]; // Time is now only "HH:MM:SS"
-                    newTimes.push(time); // Add time to labels
+                    const time = fields[1];
+                    newTimes.push(time);
                     newPrices.push(parseFloat(fields[2]));
                 });
             });
@@ -241,8 +257,8 @@
                 const entries = item.p.split(';');
                 entries.forEach(entry => {
                     const fields = entry.split(',');
-                    const time = fields[1]; // Time is now only "HH:MM:SS"
-                    newTimes.push(time); // Add time to labels
+                    const time = fields[1];
+                    newTimes.push(time);
                     newPrices.push(parseFloat(fields[2]));
                 });
             });
@@ -254,12 +270,12 @@
             chartInstance = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: times, // Only time will be displayed
+                    labels: times,
                     datasets: [{
                         data: prices,
-                        borderColor: '#64B5F6', // Soft blue
+                        borderColor: '#64B5F6',
                         borderWidth: 1,
-                        fill: false, // Only the line is visible
+                        fill: false,
                         tension: 0.1,
                         pointRadius: 0
                     }]
@@ -315,7 +331,7 @@
             chartInstance.update({ duration: 0 });
         }
 
-        setInterval(fetchExchangeRate, 5000); // 每5秒更新一次汇率
+        setInterval(fetchExchangeRate, 3000); // 每3秒更新一次汇率
         fetchExchangeRate(); // 初次加载时调用
         setInterval(updateTimeDisplay, 1000); // 每秒更新一次时间
     </script>
