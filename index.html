@@ -132,7 +132,7 @@
                         const currentRate = parseFloat(data.Result.cur.price);
                         const ratio = parseFloat(data.Result.cur.ratio);
                         updateRateDisplay(currentRate, ratio); // 更新汇率显示
-                        if (Date.now() - lastChartUpdateTime >= 30000) { // 每30秒更新一次图表
+                        if (Date.now() - lastChartUpdateTime >= 60000) { // 每60秒更新一次图表
                             updateChart(data.Result.newMarketData);
                             lastChartUpdateTime = Date.now();
                         }
@@ -315,7 +315,7 @@
             chartInstance.update({ duration: 0 });
         }
 
-        setInterval(fetchExchangeRate, 3000); // 每3秒更新一次汇率
+        setInterval(fetchExchangeRate, 5000); // 每5秒更新一次汇率
         fetchExchangeRate(); // 初次加载时调用
         setInterval(updateTimeDisplay, 1000); // 每秒更新一次时间
     </script>
