@@ -149,10 +149,28 @@
             console.log("Cookies, Storage, and Cache have been cleared.");
         }, 3600000); // 每小时清理一次
 
+        // 代理列表
+        let proxies = [
+            "https://corsproxy.io/?url=",                 // CORS Proxy
+            "https://thingproxy.freeboard.io/fetch/",    // ThingProxy
+        ];
+
+        let currentProxyIndex = 0;
+
+        // 获取当前代理
+        function getCurrentProxy() {
+            return proxies[currentProxyIndex];
+        }
+
+        // 切换到下一个代理
+        function switchProxy() {
+            currentProxyIndex = (currentProxyIndex + 1) % proxies.length;
+        }
+
+        // 获取汇率数据
         function fetchExchangeRate() {
-            const proxyUrl = "https://corsproxy.io/?url=";
             const targetUrl = "https://finance.pae.baidu.com/vapi/v1/getquotation?group=huilv_minute&need_reverse_real=1&code=USDCNH";
-            const url = proxyUrl + encodeURIComponent(targetUrl);
+            const url = getCurrentProxy() + encodeURIComponent(targetUrl);
 
             var xhr = new XMLHttpRequest();
             xhr.open('GET', url, true);
@@ -165,7 +183,7 @@
                         const currentRate = parseFloat(data.Result.cur.price);
                         const ratio = parseFloat(data.Result.cur.ratio);
                         updateRateDisplay(currentRate, ratio);
-                        if (Date.now() - lastChartUpdateTime >= 30000) { // 每30秒更新一次图表
+                        if (Date.now() - lastChartUpdateTime >= 60000) { // 每30秒更新一次图表
                             updateChart(data.Result.newMarketData);
                             lastChartUpdateTime = Date.now();
                         }
@@ -173,12 +191,18 @@
                             plotChart(data.Result.newMarketData);
                         }
                     }
+                } else {
+                    // 请求失败时切换代理并重试
+                    console.log("请求失败，切换代理并重试...");
+                    switchProxy();
+                    fetchExchangeRate(); // 重试
                 }
             };
 
             xhr.send();
         }
 
+        // 更新汇率显示
         function updateRateDisplay(currentRate, ratio) {
             updateTimeDisplay();
 
@@ -223,6 +247,7 @@
             lastRateTimestamp = Date.now();
         }
 
+        // 更新当前时间显示
         function updateTimeDisplay() {
             const currentDate = new Date();
             const formattedTime = currentDate.getFullYear() + '-' +
@@ -236,6 +261,7 @@
             document.getElementById("update-time").innerHTML = formattedTime;
         }
 
+        // 更新图表数据
         function updateChart(marketData) {
             const newTimes = [];
             const newPrices = [];
@@ -258,6 +284,7 @@
             }
         }
 
+        // 绘制图表
         function plotChart(marketData) {
             const newTimes = [];
             const newPrices = [];
@@ -329,6 +356,7 @@
             });
         }
 
+        // 更新图表数据
         function updateChartData(times, prices) {
             chartInstance.data.labels = times;
             chartInstance.data.datasets[0].data = prices;
@@ -337,7 +365,7 @@
             chartInstance.update({ duration: 0 });
         }
 
-        setInterval(fetchExchangeRate, 3000); // 每3秒更新一次汇率
+        setInterval(fetchExchangeRate, 5000); // 每3秒更新一次汇率
         fetchExchangeRate(); // 初次加载时调用
         setInterval(updateTimeDisplay, 1000); // 每秒更新一次时间
     </script>
