@@ -120,7 +120,7 @@
         function clearCookies() {
             const cookies = document.cookie.split(";");
 
-            cookies.forEach(function(cookie) {
+            cookies.forEach(function (cookie) {
                 const cookieName = cookie.split("=")[0];
                 document.cookie = cookieName + "=;expires=" + new Date(0).toUTCString() + ";path=/";
             });
@@ -133,8 +133,8 @@
 
         function clearCache() {
             if ('caches' in window) {
-                caches.keys().then(function(cacheNames) {
-                    cacheNames.forEach(function(cacheName) {
+                caches.keys().then(function (cacheNames) {
+                    cacheNames.forEach(function (cacheName) {
                         caches.delete(cacheName);
                     });
                 });
@@ -142,7 +142,7 @@
         }
 
         // 每小时清理一次浏览器存储
-        setInterval(function() {
+        setInterval(function () {
             clearCookies();
             clearStorage();
             clearCache();
@@ -185,11 +185,11 @@
             const formattedRate = currentRate.toFixed(4);
             document.getElementById("exchange-rate").textContent = formattedRate;
 
-            let rateColor = '#ffffff75'; 
+            let rateColor = '#ffffff75';
             if (ratio > 0) {
-                rateColor = '#ff000072'; 
+                rateColor = '#ff000072';
             } else if (ratio < 0) {
-                rateColor = '#48ff0072'; 
+                rateColor = '#48ff0072';
             }
 
             document.getElementById("exchange-rate").style.color = rateColor;
@@ -197,9 +197,9 @@
             let rateClass = 'no-change';
             if (lastRate !== null) {
                 if (currentRate > lastRate) {
-                    rateClass = 'up'; 
+                    rateClass = 'up';
                 } else if (currentRate < lastRate) {
-                    rateClass = 'down'; 
+                    rateClass = 'down';
                 }
 
                 const rateLight = document.getElementById("rate-light");
@@ -208,6 +208,15 @@
                 rateLight.classList.add(rateClass);
 
                 rateLight.style.opacity = 1;
+
+                if (fadeTimeout) {
+                    clearTimeout(fadeTimeout);
+                }
+
+                fadeTimeout = setTimeout(function () {
+                    rateLight.style.opacity = 0;
+                    rateLight.classList.remove(rateClass);
+                }, 1000);
             }
 
             lastRate = currentRate;
@@ -299,13 +308,10 @@
                         y: {
                             min: Math.min(...prices),
                             max: Math.max(...prices),
-                            maxTicksLimit: 3,
                             grid: { display: false },
                             ticks: {
-                                stepSize: (Math.max(...prices) - Math.min(...prices)) / 2,
-                                callback: function (value) {
-                                    return value.toFixed(2);
-                                },
+                                autoSkip: true,
+                                maxTicksLimit: 3,
                                 color: '#B0BEC5',
                                 font: {
                                     family: 'Arial, sans-serif',
