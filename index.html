@@ -36,7 +36,7 @@
             position: absolute;
             top: 50%;
             left: 50%;
-            transform: translate(-45%, -60%);
+            transform: translate(-45%, -40%);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -60,13 +60,13 @@
         .up {
             background-color: rgba(255, 0, 0, 0.3);
             box-shadow: 0 0 20px 15px rgba(255, 0, 0, 0.3);
-            transform: translateY(-100px);
+            transform: translateY(-80px);
         }
 
         .down {
             background-color: rgba(0, 255, 13, 0.3);
             box-shadow: 0 0 20px 15px rgba(0, 255, 13, 0.3);
-            transform: translateY(100px);
+            transform: translateY(80px);
         }
 
         .no-change {
@@ -365,9 +365,12 @@
             chartInstance.update({ duration: 0 });
         }
 
-        setInterval(fetchExchangeRate, 5000); // 每3秒更新一次汇率
+        setInterval(fetchExchangeRate, 5000); // 每5秒更新一次汇率
         fetchExchangeRate(); // 初次加载时调用
         setInterval(updateTimeDisplay, 1000); // 每秒更新一次时间
+        setInterval(function() {
+            location.reload(); // 每10秒刷新页面
+        }, 7200000); // 每10秒刷新一次页面
     </script>
 
 </body>
