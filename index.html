@@ -36,7 +36,7 @@
             position: absolute;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -45%);
+            transform: translate(-50%, -40%);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -83,7 +83,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            margin-bottom: 50px;
+            margin-bottom: 45px;
             margin-top: 5px;
             margin-left: 5px;
             margin-right: 5px;
@@ -140,13 +140,13 @@
             }
         }
 
-        // 每半小时清理一次浏览器存储
+        // 每小时清理一次浏览器存储
         setInterval(function () {
             clearCookies();
             clearStorage();
             clearCache();
             console.log("Cookies, Storage, and Cache have been cleared.");
-        }, 1800000); // 每半小时清理一次
+        }, 3600000); // 每小时清理一次
 
         // 代理列表
         let proxies = [
@@ -182,7 +182,7 @@
                         const currentRate = parseFloat(data.Result.cur.price);
                         const ratio = parseFloat(data.Result.cur.ratio);
                         updateRateDisplay(currentRate, ratio);
-                        if (Date.now() - lastChartUpdateTime >= 60000) { // 每60秒更新一次图表
+                        if (Date.now() - lastChartUpdateTime >= 60000) { // 每30秒更新一次图表
                             updateChart(data.Result.newMarketData);
                             lastChartUpdateTime = Date.now();
                         }
@@ -308,7 +308,7 @@
                     labels: times,
                     datasets: [{
                         data: prices,
-                        borderColor: '#64B5F6',
+                        borderColor: '#fffb07',
                         borderWidth: 1,
                         fill: false,
                         tension: 0.1,
@@ -368,8 +368,8 @@
         fetchExchangeRate(); // 初次加载时调用
         setInterval(updateTimeDisplay, 1000); // 每秒更新一次时间
         setInterval(function() {
-            location.reload(); // 每60分钟刷新页面
-        }, 3600000); 
+            location.reload(); // 每10秒刷新页面
+        }, 7200000); // 每10秒刷新一次页面
     </script>
 
 </body>
