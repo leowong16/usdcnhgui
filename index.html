@@ -147,7 +147,7 @@
             clearStorage();
             clearCache();
             console.log("Cookies, Storage, and Cache have been cleared.");
-        }, 3600000); // 每小时清理一次
+        }, 1800000); // 每半小时清理一次
 
         // 代理列表
         let proxies = [
@@ -369,8 +369,8 @@
         fetchExchangeRate(); // 初次加载时调用
         setInterval(updateTimeDisplay, 1000); // 每秒更新一次时间
         setInterval(function() {
-            location.reload(); // 每10秒刷新页面
-        }, 7200000); // 每10秒刷新一次页面
+            location.reload(); // 每1小时刷新页面
+        }, 3600000); // 每1小时刷新一次页面
     </script>
 
 </body>
