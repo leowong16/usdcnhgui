@@ -126,7 +126,7 @@
             // 此处调用你的Worker，Worker内部已经固定转发到目标URL
             var xhr = new XMLHttpRequest();
             xhr.open('GET', workerUrl, true);
-            xhr.timeout = 4000;
+            xhr.timeout = 2000;
 
             xhr.onload = function () {
                 if (xhr.status === 200) {
@@ -323,7 +323,7 @@
             chartInstance.update({ duration: 0 });
         }
 
-        setInterval(fetchExchangeRate, 5000); // 每5秒更新一次汇率
+        setInterval(fetchExchangeRate, 3000); // 每5秒更新一次汇率
         fetchExchangeRate(); // 初次加载时调用
         setInterval(updateTimeDisplay, 1000); // 每秒更新一次时间
     </script>
