@@ -120,9 +120,9 @@
 
         // 代理列表
         let proxies = [
+            "https://cros.2504588133.workers.dev/",  // 你的 Cloudflare Worker
             "https://corsproxy.io/?url=",
-            "https://thingproxy.freeboard.io/fetch/",
-            "https://cros.2504588133.workers.dev/"  // 你的 Cloudflare Worker
+            "https://thingproxy.freeboard.io/fetch/"
         ];
 
         let currentProxyIndex = 0;
@@ -147,7 +147,7 @@
 
             var xhr = new XMLHttpRequest();
             xhr.open('GET', url, true);
-            xhr.timeout = 10000;
+            xhr.timeout = 3000;
 
             xhr.onload = function () {
                 if (xhr.status === 200) {
@@ -168,7 +168,7 @@
                 } else {
                     console.log("请求失败，切换代理并重试...");
                     corsRetryCount++;
-                    if (corsRetryCount > 5) {
+                    if (corsRetryCount > 0) {
                         location.reload();
                         return;
                     }
