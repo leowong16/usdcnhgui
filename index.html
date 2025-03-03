@@ -120,15 +120,19 @@
 
         // 代理列表
         let proxies = [
-            "https://corsproxy.io/?url=",                 // CORS Proxy
-            "https://thingproxy.freeboard.io/fetch/",    // ThingProxy
+            "https://corsproxy.io/?url=",
+            "https://thingproxy.freeboard.io/fetch/",
+            "https://cros.2504588133.workers.dev/"  // 你的 Cloudflare Worker
         ];
 
         let currentProxyIndex = 0;
 
         // 获取当前代理
-        function getCurrentProxy() {
-            return proxies[currentProxyIndex];
+        function getCurrentProxy(targetUrl) {
+            let proxy = proxies[currentProxyIndex];
+
+            // 如果是 Cloudflare Worker 代理，不加 targetUrl
+            return proxy.includes("workers.dev") ? proxy : proxy + encodeURIComponent(targetUrl);
         }
 
         // 切换到下一个代理
@@ -139,7 +143,7 @@
         // 获取汇率数据
         function fetchExchangeRate() {
             const targetUrl = "https://finance.pae.baidu.com/vapi/v1/getquotation?group=huilv_minute&need_reverse_real=1&code=USDCNH";
-            const url = getCurrentProxy() + encodeURIComponent(targetUrl);
+            const url = getCurrentProxy(targetUrl);
 
             var xhr = new XMLHttpRequest();
             xhr.open('GET', url, true);
@@ -147,14 +151,13 @@
 
             xhr.onload = function () {
                 if (xhr.status === 200) {
-                    // 成功时重置尝试次数
                     corsRetryCount = 0;
                     const data = JSON.parse(xhr.responseText);
                     if (data.Result && data.Result.cur && data.Result.cur.price !== undefined) {
                         const currentRate = parseFloat(data.Result.cur.price);
                         const ratio = parseFloat(data.Result.cur.ratio);
                         updateRateDisplay(currentRate, ratio);
-                        if (Date.now() - lastChartUpdateTime >= 60000) { // 每60秒更新一次图表
+                        if (Date.now() - lastChartUpdateTime >= 60000) {
                             updateChart(data.Result.newMarketData);
                             lastChartUpdateTime = Date.now();
                         }
@@ -163,7 +166,6 @@
                         }
                     }
                 } else {
-                    // 请求失败时切换代理并重试
                     console.log("请求失败，切换代理并重试...");
                     corsRetryCount++;
                     if (corsRetryCount > 5) {
@@ -171,7 +173,7 @@
                         return;
                     }
                     switchProxy();
-                    fetchExchangeRate(); // 重试
+                    fetchExchangeRate();
                 }
             };
 
