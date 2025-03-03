@@ -115,49 +115,29 @@
         let lastRateTimestamp = 0;
         let lastChartUpdateTime = Date.now();
         let fadeTimeout = null;
-        // 新增变量，记录CORS代理尝试次数
+        // 记录CORS请求尝试次数
         let corsRetryCount = 0;
 
-        // 代理列表
-        let proxies = [
-            "https://bdfn.2504588133.workers.dev/",  // 你的 Cloudflare Worker
-            "https://corsproxy.io/?url=",
-            "https://thingproxy.freeboard.io/fetch/"
-        ];
-
-        let currentProxyIndex = 0;
-
-        // 获取当前代理
-        function getCurrentProxy(targetUrl) {
-            let proxy = proxies[currentProxyIndex];
-
-            // 如果是 Cloudflare Worker 代理，不加 targetUrl
-            return proxy.includes("workers.dev") ? proxy : proxy + encodeURIComponent(targetUrl);
-        }
-
-        // 切换到下一个代理
-        function switchProxy() {
-            currentProxyIndex = (currentProxyIndex + 1) % proxies.length;
-        }
+        // 直接使用你在Cloudflare上部署的Worker地址
+        const workerUrl = "https://cros.2504588133.workers.dev";
 
         // 获取汇率数据
         function fetchExchangeRate() {
-            const targetUrl = "https://finance.pae.baidu.com/vapi/v1/getquotation?group=huilv_minute&need_reverse_real=1&code=USDCNH";
-            const url = getCurrentProxy(targetUrl);
-
+            // 此处调用你的Worker，Worker内部已经固定转发到目标URL
             var xhr = new XMLHttpRequest();
-            xhr.open('GET', url, true);
-            xhr.timeout = 3000;
+            xhr.open('GET', workerUrl, true);
+            xhr.timeout = 4000;
 
             xhr.onload = function () {
                 if (xhr.status === 200) {
+                    // 成功时重置尝试次数
                     corsRetryCount = 0;
                     const data = JSON.parse(xhr.responseText);
                     if (data.Result && data.Result.cur && data.Result.cur.price !== undefined) {
                         const currentRate = parseFloat(data.Result.cur.price);
                         const ratio = parseFloat(data.Result.cur.ratio);
                         updateRateDisplay(currentRate, ratio);
-                        if (Date.now() - lastChartUpdateTime >= 60000) {
+                        if (Date.now() - lastChartUpdateTime >= 60000) { // 每60秒更新一次图表
                             updateChart(data.Result.newMarketData);
                             lastChartUpdateTime = Date.now();
                         }
@@ -166,14 +146,14 @@
                         }
                     }
                 } else {
-                    console.log("请求失败，切换代理并重试...");
+                    // 请求失败时，重试或刷新页面
+                    console.log("请求失败，重试中...");
                     corsRetryCount++;
-                    if (corsRetryCount > 0) {
+                    if (corsRetryCount > 2) {
                         location.reload();
                         return;
                     }
-                    switchProxy();
-                    fetchExchangeRate();
+                    fetchExchangeRate(); // 重试
                 }
             };
 
