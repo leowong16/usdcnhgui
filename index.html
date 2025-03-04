@@ -119,6 +119,28 @@
     // 使用你在 Cloudflare 上部署的 Worker 代理地址
     const workerUrl = "https://bdfn.2504588133.workers.dev";
 
+    // 数字滚动动画函数
+    function animateValue(element, startValue, endValue, duration) {
+      const startTime = performance.now();
+      const changeValue = endValue - startValue;
+
+      function updateValue(currentTime) {
+        const elapsed = currentTime - startTime;
+        let progress = Math.min(elapsed / duration, 1); // 确保 progress 不超过 1
+        progress = progress * progress * progress; // 调整缓动函数
+        const currentValue = startValue + changeValue * progress;
+        element.textContent = currentValue.toFixed(4); // 保留 4 位小数
+
+        if (elapsed < duration) {
+          requestAnimationFrame(updateValue);
+        } else {
+          element.textContent = endValue.toFixed(4); // 确保最终值精确
+        }
+      }
+
+      requestAnimationFrame(updateValue);
+    }
+
     // 获取汇率数据，使用 fetch() 代替 XMLHttpRequest
     function fetchExchangeRate() {
       fetch(workerUrl, {
@@ -162,8 +184,13 @@
     function updateRateDisplay(currentRate, ratio) {
       updateTimeDisplay();
 
-      const formattedRate = currentRate.toFixed(4);
-      document.getElementById("exchange-rate").textContent = formattedRate;
+      const rateElement = document.getElementById("exchange-rate");
+      // 如果有上一次的值，则执行滚动动画；否则直接赋值显示
+      if (lastRate === null) {
+        rateElement.textContent = currentRate.toFixed(4);
+      } else {
+        animateValue(rateElement, lastRate, currentRate, 1000);
+      }
 
       let rateColor = '#ffffff75';
       if (ratio > 0) {
@@ -171,7 +198,7 @@
       } else if (ratio < 0) {
         rateColor = '#48ff0072';
       }
-      document.getElementById("exchange-rate").style.color = rateColor;
+      rateElement.style.color = rateColor;
 
       let rateClass = 'no-change';
       if (lastRate !== null) {
