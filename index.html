@@ -52,7 +52,7 @@
             position: absolute;             /* 绝对定位 */
             top: 50%;                       /* 垂直居中 */
             left: 50%;                      /* 水平居中 */
-            transform: translate(-50%, -40%); /* 微调位置 */
+            transform: translate(-50%, -60%); /* 调整位置，将-40%改为-60%使其上移 */
             overflow: hidden;
             padding: 10px;                  /* 内边距 */
         }
@@ -156,10 +156,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-top: -20px;               /* 减小上边距，使用负值使元素向上移动 */
-            font-size: 70px;                /* 字体大小 */
+            margin-top: -30px;               /* 减小上边距，使用负值使元素向上移动 */
             color: var(--text-secondary);
-            opacity: 0.7;
+            opacity: 0.9;
         }
 
         .currency-pair {
@@ -169,11 +168,11 @@
 
         /* 涨跌幅指示器样式 */
         .rate-change {
-            font-weight: 600;
+            font-weight: 500;
             padding: 1px 16px;              /* 内边距：上下4px，左右16px */
             border-radius: 9999px;          /* 圆角 */
             transition: all 0.3s ease;
-            font-size: 50px;                /* 减小字体大小 */
+            font-size: 40px;                /* 减小字体大小 */
             position: relative;
             padding-left: 40px;             /* 左侧留出箭头空间 */
         }
