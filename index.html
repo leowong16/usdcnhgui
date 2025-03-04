@@ -126,7 +126,7 @@
             // 此处调用你的Worker，Worker内部已经固定转发到目标URL
             var xhr = new XMLHttpRequest();
             xhr.open('GET', workerUrl, true);
-            xhr.timeout = 4000;
+            xhr.timeout = 10000;
 
             xhr.onload = function () {
                 if (xhr.status === 200) {
