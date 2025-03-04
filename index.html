@@ -54,7 +54,7 @@
             left: 50%;                      /* 水平居中 */
             transform: translate(-50%, -60%); /* 调整位置，将-40%改为-60%使其上移 */
             overflow: hidden;
-            padding: 50px;                  /* 内边距 */
+            padding: 20px;                  /* 内边距 */
         }
 
         .light-effect {
@@ -500,7 +500,7 @@
             prices = newPrices;
 
             const ctx = document.getElementById('exchange-rate-chart').getContext('2d');
-            const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+            const gradient = ctx.createLinearGradient(0, 0, 0, 200);
             gradient.addColorStop(0, 'rgba(255, 255, 255, 0.2)');
             gradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.1)');
             gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
