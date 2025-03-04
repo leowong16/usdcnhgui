@@ -54,6 +54,7 @@
             left: 50%;                      /* 水平居中 */
             transform: translate(-50%, -40%); /* 微调位置 */
             overflow: hidden;
+            padding: 20px;                  /* 内边距 */
         }
 
         .light-effect {
@@ -138,7 +139,7 @@
 
         /* 汇率数字样式 */
         .exchange-rate {
-            font-size: clamp(48px, 12vw, 128px);  /* 响应式字体大小：最小48px，最大128px */
+            font-size: 128px;  /* 响应式字体大小：最小48px，最大128px */
             font-weight: 700;
             text-align: center;
             background: none;
@@ -155,10 +156,10 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 16px;                      /* 元素间距 */
-            margin-top: 16px;               /* 上边距 */
-            font-size: 300px;                /* 字体大小 */
+            margin-top: 5px;               /* 上边距 */
+            font-size: 100px;                /* 字体大小 */
             color: var(--text-secondary);
+            opacity: 0.8;
         }
 
         .currency-pair {
@@ -172,32 +173,30 @@
             padding: 4px 16px;              /* 内边距：上下4px，左右16px */
             border-radius: 9999px;          /* 圆角 */
             transition: all 0.3s ease;
-            font-size: 24px;                /* 字体大小 */
+            font-size: 50px;                /* 减小字体大小 */
             position: relative;
-            padding-left: 32px;             /* 左侧留出箭头空间 */
+            padding-left: 40px;             /* 左侧留出箭头空间 */
         }
 
         /* 涨跌箭头样式 */
         .rate-change::before {
             content: '';
             position: absolute;
-            left: 12px;                     /* 箭头位置 */
+            left: 10px;                     /* 箭头位置 */
             top: 50%;
             transform: translateY(-50%);
-            width: 0;
-            height: 0;
-            border-left: 8px solid transparent;    /* 箭头大小 */
-            border-right: 8px solid transparent;
+            border-left: 12px solid transparent;    /* 增加箭头大小 */
+            border-right: 12px solid transparent;
             transition: all 0.3s ease;
         }
 
         .up .rate-change::before {
-            border-bottom: 12.8px solid var(--accent-down);
+            border-bottom: 20px solid var(--accent-down);
             border-top: 0;
         }
 
         .down .rate-change::before {
-            border-top: 12.8px solid var(--accent-up);
+            border-top: 20px solid var(--accent-up);
             border-bottom: 0;
         }
 
@@ -217,7 +216,7 @@
             top: 0;                         /* 从顶部开始 */
             left: 0;                      /* 水平居中 */
             z-index: 1;                     /* 层级 */
-            margin: 5px 10px 40px 5px;     /* 上右下左边距 */
+            margin: 5px 10px 45px 5px;     /* 上右下左边距 */
         }
 
         /* 时间显示样式 */
