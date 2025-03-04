@@ -2,331 +2,316 @@
 <html lang="zh">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>实时汇率显示</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            text-align: center;
-            background-color: #000000;
-            color: #E0E0E0;
-            overflow: hidden;
-            height: 100vh;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>实时汇率显示</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+      background-color: #000000;
+      color: #E0E0E0;
+      overflow: hidden;
+      height: 100vh;
+    }
 
-        /* 时间显示区域，修改为固定在底部 */
-        .update-time {
-            position: fixed;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-55%);
-            font-size: 8vw;
-            color: #f0f0f07e;
-            z-index: 1;
-            margin-bottom: 0px;
-            white-space: nowrap;
-            text-align: center;
-        }
+    /* 时间显示区域，固定在底部 */
+    .update-time {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-55%);
+      font-size: 8vw;
+      color: #f0f0f07e;
+      z-index: 1;
+      margin-bottom: 0;
+      white-space: nowrap;
+      text-align: center;
+    }
 
-        /* 汇率显示区域 */
-        .rate-container {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -40%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 190px;
-            font-weight: bold;
-            //padding: 20px;
-            z-index: 2;
-        }
+    /* 汇率显示区域 */
+    .rate-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -40%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 190px;
+      font-weight: bold;
+      z-index: 2;
+    }
 
-        /* 光效部分 */
-        .rate-light {
-            position: absolute;
-            width: 600px;
-            height: 0px;
-            border-radius: 20px;
-            opacity: 0;
-            transform: translateY(0);
-            transition: opacity 1s ease-out, transform 1s ease-out, background-color 1s ease-out, box-shadow 1s ease-out;
-        }
+    /* 光效部分 */
+    .rate-light {
+      position: absolute;
+      width: 600px;
+      height: 0px;
+      border-radius: 20px;
+      opacity: 0;
+      transform: translateY(0);
+      transition: opacity 1s ease-out, transform 1s ease-out, background-color 1s ease-out, box-shadow 1s ease-out;
+    }
 
-        .up {
-            background-color: rgba(255, 0, 0, 0.3);
-            box-shadow: 0 0 20px 15px rgba(255, 0, 0, 0.3);
-            transform: translateY(-90px);
-        }
+    .up {
+      background-color: rgba(255, 0, 0, 0.3);
+      box-shadow: 0 0 20px 15px rgba(255, 0, 0, 0.3);
+      transform: translateY(-90px);
+    }
 
-        .down {
-            background-color: rgba(0, 255, 13, 0.3);
-            box-shadow: 0 0 20px 15px rgba(0, 255, 13, 0.3);
-            transform: translateY(90px);
-        }
+    .down {
+      background-color: rgba(0, 255, 13, 0.3);
+      box-shadow: 0 0 20px 15px rgba(0, 255, 13, 0.3);
+      transform: translateY(90px);
+    }
 
-        .no-change {
-            opacity: 0;
-            transform: translateY(0);
-            box-shadow: none;
-            background-color: rgba(255, 255, 255, 0.3);
-            box-shadow: 0 0 20px 15px rgba(224, 224, 224, 0.3);
-        }
+    .no-change {
+      opacity: 0;
+      transform: translateY(0);
+      box-shadow: none;
+      background-color: rgba(255, 255, 255, 0.3);
+      box-shadow: 0 0 20px 15px rgba(224, 224, 224, 0.3);
+    }
 
-        /* 图表区域 */
-        canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            margin-bottom: 45px;
-            margin-top: 5px;
-            margin-left: 5px;
-            margin-right: 5px;
-            background-color: rgba(0, 0, 0, 0.05);
-            z-index: 0;
-        }
-    </style>
+    /* 图表区域 */
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      margin-bottom: 45px;
+      margin-top: 5px;
+      margin-left: 5px;
+      margin-right: 5px;
+      background-color: rgba(0, 0, 0, 0.05);
+      z-index: 0;
+    }
+  </style>
 </head>
 
 <body>
 
-    <div class="update-time" id="update-time">加载中...</div>
+  <div class="update-time" id="update-time">加载中...</div>
 
-    <div class="rate-container">
-        <div class="rate" id="exchange-rate">加载中...</div>
-        <div class="rate-light" id="rate-light"></div> <!-- 光效容器 -->
-    </div>
+  <div class="rate-container">
+    <div class="rate" id="exchange-rate">加载中...</div>
+    <div class="rate-light" id="rate-light"></div>
+  </div>
 
-    <canvas id="exchange-rate-chart"></canvas>
+  <canvas id="exchange-rate-chart"></canvas>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <script>
-        let chartInstance = null;
-        let times = [];
-        let prices = [];
-        let lastRate = null;
-        let lastRateTimestamp = 0;
-        let lastChartUpdateTime = Date.now();
-        let fadeTimeout = null;
-        // 记录CORS请求尝试次数
-        let corsRetryCount = 0;
+  <script>
+    let chartInstance = null;
+    let times = [];
+    let prices = [];
+    let lastRate = null;
+    let lastRateTimestamp = 0;
+    let lastChartUpdateTime = Date.now();
+    let fadeTimeout = null;
+    // 记录请求失败重试次数
+    let corsRetryCount = 0;
+    // 使用你在 Cloudflare 上部署的 Worker 代理地址
+    const workerUrl = "https://bdfn.2504588133.workers.dev";
 
-        // 直接使用你在Cloudflare上部署的Worker地址
-        const workerUrl = "https://bdfn.2504588133.workers.dev";
-
-        // 获取汇率数据
-        function fetchExchangeRate() {
-            // 此处调用你的Worker，Worker内部已经固定转发到目标URL
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', workerUrl, true);
-            xhr.timeout = 10000;
-
-            xhr.onload = function () {
-                if (xhr.status === 200) {
-                    // 成功时重置尝试次数
-                    corsRetryCount = 0;
-                    const data = JSON.parse(xhr.responseText);
-                    if (data.Result && data.Result.cur && data.Result.cur.price !== undefined) {
-                        const currentRate = parseFloat(data.Result.cur.price);
-                        const ratio = parseFloat(data.Result.cur.ratio);
-                        updateRateDisplay(currentRate, ratio);
-                        if (Date.now() - lastChartUpdateTime >= 60000) { // 每60秒更新一次图表
-                            updateChart(data.Result.newMarketData);
-                            lastChartUpdateTime = Date.now();
-                        }
-                        if (!chartInstance) {
-                            plotChart(data.Result.newMarketData);
-                        }
-                    }
-                } else {
-                    // 请求失败时，重试或刷新页面
-                    console.log("请求失败，重试中...");
-                    corsRetryCount++;
-                    if (corsRetryCount > 2) {
-                        location.reload();
-                        return;
-                    }
-                    fetchExchangeRate(); // 重试
-                }
-            };
-
-            xhr.send();
-        }
-
-        // 更新汇率显示
-        function updateRateDisplay(currentRate, ratio) {
-            updateTimeDisplay();
-
-            const formattedRate = currentRate.toFixed(4);
-            document.getElementById("exchange-rate").textContent = formattedRate;
-
-            let rateColor = '#ffffff75';
-            if (ratio > 0) {
-                rateColor = '#ff000072';
-            } else if (ratio < 0) {
-                rateColor = '#48ff0072';
+    // 获取汇率数据，使用 fetch() 代替 XMLHttpRequest
+    function fetchExchangeRate() {
+      fetch(workerUrl, {
+        method: 'GET',
+        cache: 'no-store' // 禁用缓存，确保获取最新数据
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP 错误: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          // 成功时重置重试计数
+          corsRetryCount = 0;
+          if (data.Result && data.Result.cur && data.Result.cur.price !== undefined) {
+            const currentRate = parseFloat(data.Result.cur.price);
+            const ratio = parseFloat(data.Result.cur.ratio);
+            updateRateDisplay(currentRate, ratio);
+            if (Date.now() - lastChartUpdateTime >= 60000) { // 每60秒更新一次图表
+              updateChart(data.Result.newMarketData);
+              lastChartUpdateTime = Date.now();
             }
-
-            document.getElementById("exchange-rate").style.color = rateColor;
-
-            let rateClass = 'no-change';
-            if (lastRate !== null) {
-                if (currentRate > lastRate) {
-                    rateClass = 'up';
-                } else if (currentRate < lastRate) {
-                    rateClass = 'down';
-                }
-
-                const rateLight = document.getElementById("rate-light");
-
-                rateLight.classList.remove('up', 'down', 'no-change');
-                rateLight.classList.add(rateClass);
-
-                rateLight.style.opacity = 1;
-
-                if (fadeTimeout) {
-                    clearTimeout(fadeTimeout);
-                }
-
-                fadeTimeout = setTimeout(function () {
-                    rateLight.style.opacity = 0;
-                    rateLight.classList.remove(rateClass);
-                }, 1000);
+            if (!chartInstance) {
+              plotChart(data.Result.newMarketData);
             }
+          }
+        })
+        .catch(error => {
+          console.error("数据获取失败:", error);
+          corsRetryCount++;
+          if (corsRetryCount > 2) {
+            location.reload(); // 超过2次重试失败，刷新页面
+          } else {
+            setTimeout(fetchExchangeRate, 3000); // 3秒后重试
+          }
+        });
+    }
 
-            lastRate = currentRate;
-            lastRateTimestamp = Date.now();
+    // 更新汇率显示
+    function updateRateDisplay(currentRate, ratio) {
+      updateTimeDisplay();
+
+      const formattedRate = currentRate.toFixed(4);
+      document.getElementById("exchange-rate").textContent = formattedRate;
+
+      let rateColor = '#ffffff75';
+      if (ratio > 0) {
+        rateColor = '#ff000072';
+      } else if (ratio < 0) {
+        rateColor = '#48ff0072';
+      }
+      document.getElementById("exchange-rate").style.color = rateColor;
+
+      let rateClass = 'no-change';
+      if (lastRate !== null) {
+        if (currentRate > lastRate) {
+          rateClass = 'up';
+        } else if (currentRate < lastRate) {
+          rateClass = 'down';
         }
-
-        // 更新当前时间显示
-        function updateTimeDisplay() {
-            const currentDate = new Date();
-            const formattedTime = currentDate.getFullYear() + '-' +
-                (currentDate.getMonth() + 1).toString().padStart(2, '0') + '-' +
-                currentDate.getDate().toString().padStart(2, '0') +
-                '&nbsp;&nbsp;&nbsp;&nbsp;' +
-                currentDate.getHours().toString().padStart(2, '0') + ':' +
-                currentDate.getMinutes().toString().padStart(2, '0') + ':' +
-                currentDate.getSeconds().toString().padStart(2, '0');
-
-            document.getElementById("update-time").innerHTML = formattedTime;
+        const rateLight = document.getElementById("rate-light");
+        rateLight.classList.remove('up', 'down', 'no-change');
+        rateLight.classList.add(rateClass);
+        rateLight.style.opacity = 1;
+        if (fadeTimeout) {
+          clearTimeout(fadeTimeout);
         }
+        fadeTimeout = setTimeout(function () {
+          rateLight.style.opacity = 0;
+          rateLight.classList.remove(rateClass);
+        }, 1000);
+      }
+      lastRate = currentRate;
+      lastRateTimestamp = Date.now();
+    }
 
-        // 更新图表数据
-        function updateChart(marketData) {
-            const newTimes = [];
-            const newPrices = [];
+    // 更新当前时间显示
+    function updateTimeDisplay() {
+      const currentDate = new Date();
+      const formattedTime = currentDate.getFullYear() + '-' +
+        (currentDate.getMonth() + 1).toString().padStart(2, '0') + '-' +
+        currentDate.getDate().toString().padStart(2, '0') +
+        '&nbsp;&nbsp;&nbsp;&nbsp;' +
+        currentDate.getHours().toString().padStart(2, '0') + ':' +
+        currentDate.getMinutes().toString().padStart(2, '0') + ':' +
+        currentDate.getSeconds().toString().padStart(2, '0');
+      document.getElementById("update-time").innerHTML = formattedTime;
+    }
 
-            marketData.marketData.forEach(item => {
-                const entries = item.p.split(';');
-                entries.forEach(entry => {
-                    const fields = entry.split(',');
-                    const time = fields[1];
-                    newTimes.push(time);
-                    newPrices.push(parseFloat(fields[2]));
-                });
-            });
+    // 更新图表数据
+    function updateChart(marketData) {
+      const newTimes = [];
+      const newPrices = [];
+      marketData.marketData.forEach(item => {
+        const entries = item.p.split(';');
+        entries.forEach(entry => {
+          const fields = entry.split(',');
+          const time = fields[1];
+          newTimes.push(time);
+          newPrices.push(parseFloat(fields[2]));
+        });
+      });
+      times = newTimes;
+      prices = newPrices;
+      if (chartInstance) {
+        updateChartData(times, prices);
+      }
+    }
 
-            times = newTimes;
-            prices = newPrices;
-
-            if (chartInstance) {
-                updateChartData(times, prices);
-            }
-        }
-
-        // 绘制图表
-        function plotChart(marketData) {
-            const newTimes = [];
-            const newPrices = [];
-
-            marketData.marketData.forEach(item => {
-                const entries = item.p.split(';');
-                entries.forEach(entry => {
-                    const fields = entry.split(',');
-                    const time = fields[1];
-                    newTimes.push(time);
-                    newPrices.push(parseFloat(fields[2]));
-                });
-            });
-
-            times = newTimes;
-            prices = newPrices;
-
-            const ctx = document.getElementById('exchange-rate-chart').getContext('2d');
-            chartInstance = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: times,
-                    datasets: [{
-                        data: prices,
-                        borderColor: '#fffb07',
-                        borderWidth: 1,
-                        fill: false,
-                        tension: 0.1,
-                        pointRadius: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        x: {
-                            grid: { display: false },
-                            ticks: {
-                                autoSkip: true,
-                                maxTicksLimit: 3,
-                                color: '#B0BEC5',
-                                font: {
-                                    family: 'Arial, sans-serif',
-                                    size: 20,
-                                }
-                            }
-                        },
-                        y: {
-                            min: Math.min(...prices),
-                            max: Math.max(...prices),
-                            grid: { display: false },
-                            ticks: {
-                                autoSkip: true,
-                                maxTicksLimit: 3,
-                                color: '#B0BEC5',
-                                font: {
-                                    family: 'Arial, sans-serif',
-                                    size: 20,
-                                }
-                            }
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    }
+    // 绘制图表
+    function plotChart(marketData) {
+      const newTimes = [];
+      const newPrices = [];
+      marketData.marketData.forEach(item => {
+        const entries = item.p.split(';');
+        entries.forEach(entry => {
+          const fields = entry.split(',');
+          const time = fields[1];
+          newTimes.push(time);
+          newPrices.push(parseFloat(fields[2]));
+        });
+      });
+      times = newTimes;
+      prices = newPrices;
+      const ctx = document.getElementById('exchange-rate-chart').getContext('2d');
+      chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: times,
+          datasets: [{
+            data: prices,
+            borderColor: '#fffb07',
+            borderWidth: 1,
+            fill: false,
+            tension: 0.1,
+            pointRadius: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: {
+                autoSkip: true,
+                maxTicksLimit: 3,
+                color: '#B0BEC5',
+                font: {
+                  family: 'Arial, sans-serif',
+                  size: 20
                 }
-            });
+              }
+            },
+            y: {
+              min: Math.min(...prices),
+              max: Math.max(...prices),
+              grid: { display: false },
+              ticks: {
+                autoSkip: true,
+                maxTicksLimit: 3,
+                color: '#B0BEC5',
+                font: {
+                  family: 'Arial, sans-serif',
+                  size: 20
+                }
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              display: false
+            }
+          }
         }
+      });
+    }
 
-        // 更新图表数据
-        function updateChartData(times, prices) {
-            chartInstance.data.labels = times;
-            chartInstance.data.datasets[0].data = prices;
-            chartInstance.options.scales.y.min = Math.min(...prices);
-            chartInstance.options.scales.y.max = Math.max(...prices);
-            chartInstance.update({ duration: 0 });
-        }
+    // 更新图表数据
+    function updateChartData(times, prices) {
+      chartInstance.data.labels = times;
+      chartInstance.data.datasets[0].data = prices;
+      chartInstance.options.scales.y.min = Math.min(...prices);
+      chartInstance.options.scales.y.max = Math.max(...prices);
+      chartInstance.update({ duration: 0 });
+    }
 
-        setInterval(fetchExchangeRate, 5000); // 每5秒更新一次汇率
-        fetchExchangeRate(); // 初次加载时调用
-        setInterval(updateTimeDisplay, 1000); // 每秒更新一次时间
-    </script>
+    // 每5秒获取一次数据，每秒更新一次时间显示
+    setInterval(fetchExchangeRate, 5000);
+    fetchExchangeRate();
+    setInterval(updateTimeDisplay, 1000);
+  </script>
 
 </body>
 
