@@ -10,7 +10,7 @@
         :root {
             --bg-primary: #0f172a;          /* 主背景色 */
             --text-primary: #e2e8f0;        /* 主要文字颜色 */
-            --text-secondary: #e2eaf5;      /* 次要文字颜色 */
+            --text-secondary: #b1b5ba;      /* 次要文字颜色 */
             --accent-up: #10b981;          /* 上涨颜色 */
             --accent-down: #ef4444;        /* 下跌颜色 */
             --border-color: rgba(148, 163, 184, 0.2);  /* 边框颜色 */
@@ -54,7 +54,7 @@
             left: 50%;                      /* 水平居中 */
             transform: translate(-50%, -40%); /* 微调位置 */
             overflow: hidden;
-            padding: 20px;                  /* 内边距 */
+            padding: 10px;                  /* 内边距 */
         }
 
         .light-effect {
@@ -139,8 +139,8 @@
 
         /* 汇率数字样式 */
         .exchange-rate {
-            font-size: 128px;  /* 响应式字体大小：最小48px，最大128px */
-            font-weight: 700;
+            font-size: 180px;  
+            font-weight: 600;
             text-align: center;
             background: none;
             -webkit-background-clip: initial;
@@ -148,7 +148,7 @@
             color: var(--text-primary);
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             font-variant-numeric: tabular-nums;    /* 等宽数字 */
-            opacity: 0.8;
+            opacity: 0.7;
         }
 
         /* 汇率详情样式 */
@@ -156,10 +156,10 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-top: 5px;               /* 上边距 */
-            font-size: 100px;                /* 字体大小 */
+            margin-top: -20px;               /* 减小上边距，使用负值使元素向上移动 */
+            font-size: 70px;                /* 字体大小 */
             color: var(--text-secondary);
-            opacity: 0.8;
+            opacity: 0.7;
         }
 
         .currency-pair {
@@ -170,7 +170,7 @@
         /* 涨跌幅指示器样式 */
         .rate-change {
             font-weight: 600;
-            padding: 4px 16px;              /* 内边距：上下4px，左右16px */
+            padding: 1px 16px;              /* 内边距：上下4px，左右16px */
             border-radius: 9999px;          /* 圆角 */
             transition: all 0.3s ease;
             font-size: 50px;                /* 减小字体大小 */
@@ -390,6 +390,9 @@
                 setTimeout(() => {
                     rateElement.style.transform = 'scale(1)';
                 }, 500);
+            } else {
+                // 汇率不变时，直接设置为原始大小
+                rateElement.style.transform = 'scale(1)';
             }
 
             function animateRate(currentTime) {
