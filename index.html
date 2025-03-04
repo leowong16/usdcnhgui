@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>USD/CNH 实时汇率</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         /* 根变量定义 - 用于主题颜色和透明度 */
         :root {
@@ -26,7 +26,7 @@
 
         /* 页面主体样式 */
         body {
-            font-family: 'Space Grotesk', sans-serif;
+            font-family: 'Quicksand', 'Segoe UI', system-ui, -apple-system, sans-serif;
             background:#0f172a;
             color: var(--text-primary);
             min-height: 100vh;              /* 最小高度为视口高度 */
@@ -139,8 +139,9 @@
 
         /* 汇率数字样式 */
         .exchange-rate {
+            font-family: 'Quicksand', 'Segoe UI', system-ui, -apple-system, sans-serif;
             font-size: 180px;  
-            font-weight: 530;
+            font-weight: 600;
             text-align: center;
             background: none;
             -webkit-background-clip: initial;
@@ -228,6 +229,7 @@
             backdrop-filter: blur(12px);    /* 毛玻璃效果 */
             padding: 8px;                   /* 内边距 */
             font-size: 40px;                /* 字体大小 */
+            font-weight: 600;
             color: var(--text-secondary);
             letter-spacing: 0.05em;         /* 字间距 */
             box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.2);  /* 阴影效果 */
@@ -500,7 +502,7 @@
             prices = newPrices;
 
             const ctx = document.getElementById('exchange-rate-chart').getContext('2d');
-            const gradient = ctx.createLinearGradient(0, 0, 0, 200);
+            const gradient = ctx.createLinearGradient(0, 0, 0, 250);
             gradient.addColorStop(0, 'rgba(255, 255, 255, 0.2)');
             gradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.1)');
             gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
@@ -512,7 +514,7 @@
                     datasets: [{
                         data: prices,
                         borderColor: '#ffffff',
-                        borderWidth: 1.5,
+                        borderWidth: 1,
                         backgroundColor: gradient,
                         fill: true,
                         tension: 0.4,
