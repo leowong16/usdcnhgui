@@ -140,7 +140,7 @@
         /* 汇率数字样式 */
         .exchange-rate {
             font-size: 180px;  
-            font-weight: 600;
+            font-weight: 540;
             text-align: center;
             background: none;
             -webkit-background-clip: initial;
@@ -168,7 +168,7 @@
 
         /* 涨跌幅指示器样式 */
         .rate-change {
-            font-weight: 500;
+            font-weight: 550;
             padding: 1px 16px;              /* 内边距：上下4px，左右16px */
             border-radius: 9999px;          /* 圆角 */
             transition: all 0.3s ease;
@@ -500,7 +500,7 @@
             prices = newPrices;
 
             const ctx = document.getElementById('exchange-rate-chart').getContext('2d');
-            const gradient = ctx.createLinearGradient(0, 0, 0, 600);
+            const gradient = ctx.createLinearGradient(0, 0, 0, 300);
             gradient.addColorStop(0, 'rgba(255, 255, 255, 0.2)');
             gradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.1)');
             gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
