@@ -224,8 +224,7 @@
             left: 0;                        /* 左对齐 */
             right: 0;                       /* 右对齐 */
             background: var(--glass-bg);
-            backdrop-filter: blur(12px);    /* 毛玻璃效果 */
-            padding: 8px;                   /* 内边距 */
+            padding: 1px;                   /* 内边距 */
             font-size: 40px;                /* 字体大小 */
             color: var(--text-secondary);
             letter-spacing: 0.05em;         /* 字间距 */
@@ -240,7 +239,7 @@
         }
 
         .time-display .time {
-            margin-right: 20px;             /* 时间右侧间距 */
+            margin-right: 10px;             /* 时间右侧间距 */
         }
 
         .time-display .rate-change {
@@ -249,7 +248,8 @@
             padding: 0 12px;                /* 减小内边距 */
             border-radius: 8px;             /* 减小圆角 */
             transition: all 0.3s ease;
-            position: relative;
+            position: fixed;
+            right: 0;
             padding-left: 32px;             /* 减小左侧箭头空间 */
             height: 36px;                   /* 固定高度 */
             line-height: 36px;              /* 行高等于高度，垂直居中 */
