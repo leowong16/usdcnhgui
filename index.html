@@ -226,7 +226,7 @@
             padding: 1px;                   /* 内边距 */
             font-size: 40px;                /* 字体大小 */
             color: var(--text-secondary);
-            letter-spacing: 0.05em;         /* 字间距 */
+            letter-spacing: 0.02em;         /* 字间距 */
             box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.2);  /* 阴影效果 */
             z-index: 20;                    /* 确保显示在最上层 */
             width: 100%;                    /* 全宽 */
@@ -244,7 +244,7 @@
         .time-display .rate-change {
             font-size: 40px;                /* 与时间相同大小 */
             font-weight: 550;
-            padding: 0 12px;                /* 减小内边距 */
+            padding: 0 5px;                /* 减小内边距 */
             border-radius: 8px;             /* 减小圆角 */
             transition: all 0.3s ease;
             position: fixed;
@@ -298,6 +298,40 @@
             pointer-events: none;           /* 不影响交互 */
         }
 
+        /* 图表加载状态提示样式 */
+        .chart-loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--text-secondary);
+            font-size: 24px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 5;
+        }
+
+        .chart-loading.visible {
+            opacity: 1;
+        }
+
+        .chart-loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-left: 10px;
+            border: 2px solid var(--text-secondary);
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
 
     </style>
 </head>
@@ -305,6 +339,7 @@
     <div class="background-grid"></div>
     <div class="dashboard-container">
         <canvas id="exchange-rate-chart"></canvas>
+        <div class="chart-loading" id="chart-loading">图表加载中...</div>
         <div class="rate-container">
             <div class="light-effect" id="light-effect-1"></div>
             <div class="light-effect" id="light-effect-2"></div>
@@ -327,34 +362,44 @@
         let lastChartUpdateTime = Date.now();
         let corsRetryCount = 0;
         let consecutiveFailures = 0;
-        let isPageVisible = true;
         let fetchInterval;
-        const MAX_CONSECUTIVE_FAILURES = 3;
+        const MAX_CONSECUTIVE_FAILURES = 5;  // 增加最大失败次数
         const FETCH_INTERVAL = 5000;
+        let chartLoadingTimeout = null;
 
         const PROXY_URL = "https://bdfn.2504588133.workers.dev/";
 
-        // 检测页面可见性变化
-        document.addEventListener('visibilitychange', function() {
-            isPageVisible = !document.hidden;
-            if (isPageVisible) {
-                console.log("页面重新可见，重新初始化...");
-                resetAndRestart();
-            }
-        });
+        function showChartLoading() {
+            const loadingElement = document.getElementById('chart-loading');
+            loadingElement.classList.add('visible');
+        }
 
-        // 重置和重启函数
+        function hideChartLoading() {
+            const loadingElement = document.getElementById('chart-loading');
+            loadingElement.classList.remove('visible');
+        }
+
         function resetAndRestart() {
             clearInterval(fetchInterval);
+            if (chartLoadingTimeout) {
+                clearTimeout(chartLoadingTimeout);
+            }
             consecutiveFailures = 0;
             corsRetryCount = 0;
             times = [];
             prices = [];
+            
+            showChartLoading();
+            
             if (chartInstance) {
                 chartInstance.destroy();
                 chartInstance = null;
             }
-            startFetching();
+            
+            // 延迟启动，给用户一个视觉反馈
+            chartLoadingTimeout = setTimeout(() => {
+                startFetching();
+            }, 1000);
         }
 
         function startFetching() {
@@ -363,14 +408,12 @@
         }
 
         function fetchExchangeRate() {
-            if (!isPageVisible) return; // 页面不可见时不更新
-
             const targetUrl = "https://finance.pae.baidu.com/vapi/v1/getquotation?group=huilv_minute&need_reverse_real=1&code=USDCNH";
             const url = PROXY_URL + targetUrl;
 
             var xhr = new XMLHttpRequest();
             xhr.open('GET', url, true);
-            xhr.timeout = 3000;
+            xhr.timeout = 4000;
 
             xhr.onload = function () {
                 if (xhr.status === 200) {
@@ -417,7 +460,12 @@
             
             if (consecutiveFailures >= MAX_CONSECUTIVE_FAILURES) {
                 console.log("连续失败次数过多，尝试重置...");
+                showChartLoading();
                 resetAndRestart();
+            } else {
+                // 显示重试信息
+                const loadingElement = document.getElementById('chart-loading');
+                loadingElement.textContent = `图表加载中... (重试 ${consecutiveFailures}/${MAX_CONSECUTIVE_FAILURES})`;
             }
         }
 
@@ -675,12 +723,15 @@
                         }
                     }
                 });
+
+                hideChartLoading();
             } catch (e) {
                 console.log("绘制图表错误: " + e.message);
                 if (chartInstance) {
                     chartInstance.destroy();
                     chartInstance = null;
                 }
+                handleError("图表绘制失败");
             }
         }
 
