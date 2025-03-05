@@ -246,17 +246,19 @@
         .time-display .rate-change {
             font-size: 40px;                /* 与时间相同大小 */
             font-weight: 550;
-            padding: 1px 16px;
-            border-radius: 9999px;
+            padding: 0 12px;                /* 减小内边距 */
+            border-radius: 8px;             /* 减小圆角 */
             transition: all 0.3s ease;
             position: relative;
-            padding-left: 40px;
+            padding-left: 32px;             /* 减小左侧箭头空间 */
+            height: 36px;                   /* 固定高度 */
+            line-height: 36px;              /* 行高等于高度，垂直居中 */
         }
 
         .time-display .rate-change::before {
             content: '';
             position: absolute;
-            left: 10px;
+            left: 8px;                      /* 调整箭头位置 */
             top: 50%;
             transform: translateY(-50%);
             border-left: 12px solid transparent;
@@ -546,7 +548,7 @@
             const formattedTime = currentDate.getFullYear() + '-' +
                 (currentDate.getMonth() + 1).toString().padStart(2, '0') + '-' +
                 currentDate.getDate().toString().padStart(2, '0') +
-                '&nbsp;&nbsp;&nbsp;' +  // 使用HTML空格
+                '&nbsp;&nbsp;' +  // 使用HTML空格
                 currentDate.getHours().toString().padStart(2, '0') + ':' +
                 currentDate.getMinutes().toString().padStart(2, '0') + ':' +
                 currentDate.getSeconds().toString().padStart(2, '0');
