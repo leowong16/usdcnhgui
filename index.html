@@ -602,9 +602,9 @@
 
                 const ctx = document.getElementById('exchange-rate-chart').getContext('2d');
                 const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-                gradient.addColorStop(0, 'rgba(255, 255, 255, 0.2)');
-                gradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.1)');
-                gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+                gradient.addColorStop(0, 'rgba(255, 242, 0, 0.2)');
+                gradient.addColorStop(0.5, 'rgba(255, 242, 0, 0.1)');
+                gradient.addColorStop(1, 'rgba(255, 242, 0, 0)');
 
                 if (chartInstance) {
                     chartInstance.destroy();
@@ -616,7 +616,7 @@
                         labels: times,
                         datasets: [{
                             data: prices,
-                            borderColor: '#ffffff',
+                            borderColor: '#fffb07',
                             borderWidth: 1,
                             backgroundColor: gradient,
                             fill: true,
@@ -636,7 +636,7 @@
                                     borderColor: 'rgba(148, 163, 184, 0.2)'
                                 },
                                 ticks: {
-                                    color: '#e2eaf5',
+                                    color: '#fffb07',
                                     maxRotation: 0,
                                     autoSkip: true,
                                     maxTicksLimit: 3,
@@ -654,7 +654,7 @@
                                     borderColor: 'rgba(148, 163, 184, 0.2)'
                                 },
                                 ticks: {
-                                    color: '#e2eaf5',
+                                    color: '#fffb07',
                                     maxTicksLimit: 3,
                                     font: {
                                         size: 20
