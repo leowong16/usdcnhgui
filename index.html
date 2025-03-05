@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="zh">
 <head>
@@ -14,7 +13,7 @@
             --text-secondary: #b1b5ba;      /* 次要文字颜色 */
             --accent-up: #10b981;          /* 上涨颜色 */
             --accent-down: #ef4444;        /* 下跌颜色 */
-            --border-color: rgba(148, 163, 184, 0.4);  /* 边框颜色 */
+            --border-color: rgba(148, 163, 184, 0.2);  /* 边框颜色 */
             --glass-bg: rgba(15, 23, 42, 0.7);        /* 毛玻璃背景色 */
         }
 
@@ -55,7 +54,7 @@
             left: 50%;                      /* 水平居中 */
             transform: translate(-50%, -60%); /* 调整位置，将-40%改为-60%使其上移 */
             overflow: hidden;
-            padding: 20px;                  /* 内边距 */
+            padding: 5px;                  /* 内边距 */
         }
 
         .light-effect {
@@ -149,7 +148,7 @@
             color: var(--text-primary);
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             font-variant-numeric: tabular-nums;    /* 等宽数字 */
-            opacity: 0.7;
+            opacity: 0.5;
         }
 
         /* 汇率详情样式 */
@@ -159,7 +158,6 @@
             justify-content: center;
             margin-top: -30px;               /* 减小上边距，使用负值使元素向上移动 */
             color: var(--text-secondary);
-            opacity: 0.9;
         }
 
         .currency-pair {
@@ -237,8 +235,53 @@
             height: 48px;                   /* 固定高度 */
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;    /* 改为左对齐 */
             border-radius: 0;               /* 移除圆角 */
+        }
+
+        .time-display .time {
+            margin-right: 20px;             /* 时间右侧间距 */
+        }
+
+        .time-display .rate-change {
+            font-size: 40px;                /* 与时间相同大小 */
+            font-weight: 550;
+            padding: 1px 16px;
+            border-radius: 9999px;
+            transition: all 0.3s ease;
+            position: relative;
+            padding-left: 40px;
+        }
+
+        .time-display .rate-change::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            border-left: 12px solid transparent;
+            border-right: 12px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .time-display .up .rate-change::before {
+            border-bottom: 20px solid var(--accent-down);
+            border-top: 0;
+        }
+
+        .time-display .down .rate-change::before {
+            border-top: 20px solid var(--accent-up);
+            border-bottom: 0;
+        }
+
+        .time-display .up .rate-change {
+            color: var(--accent-down);
+            background: rgba(239, 68, 68, 0.3);
+        }
+
+        .time-display .down .rate-change {
+            color: var(--accent-up);
+            background: rgba(16, 185, 129, 0.3);
         }
 
         /* 背景网格样式 */
@@ -266,12 +309,12 @@
             <div class="light-effect" id="light-effect-2"></div>
             <div class="light-effect" id="light-effect-3"></div>
             <div class="exchange-rate" id="exchange-rate">加载中...</div>
-            <div class="rate-details" id="rate-details">
-                <span class="rate-change" id="rate-change"></span>
-            </div>
         </div>
     </div>
-    <div class="time-display" id="update-time">加载中...</div>
+    <div class="time-display">
+        <span class="time" id="update-time">加载中...</span>
+        <span class="rate-change" id="rate-change"></span>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
@@ -282,10 +325,45 @@
         let lastRateTimestamp = 0;
         let lastChartUpdateTime = Date.now();
         let corsRetryCount = 0;
+        let consecutiveFailures = 0;
+        let isPageVisible = true;
+        let fetchInterval;
+        const MAX_CONSECUTIVE_FAILURES = 3;
+        const FETCH_INTERVAL = 5000;
 
         const PROXY_URL = "https://bdfn.2504588133.workers.dev/";
 
+        // 检测页面可见性变化
+        document.addEventListener('visibilitychange', function() {
+            isPageVisible = !document.hidden;
+            if (isPageVisible) {
+                console.log("页面重新可见，重新初始化...");
+                resetAndRestart();
+            }
+        });
+
+        // 重置和重启函数
+        function resetAndRestart() {
+            clearInterval(fetchInterval);
+            consecutiveFailures = 0;
+            corsRetryCount = 0;
+            times = [];
+            prices = [];
+            if (chartInstance) {
+                chartInstance.destroy();
+                chartInstance = null;
+            }
+            startFetching();
+        }
+
+        function startFetching() {
+            fetchExchangeRate(); // 立即执行一次
+            fetchInterval = setInterval(fetchExchangeRate, FETCH_INTERVAL);
+        }
+
         function fetchExchangeRate() {
+            if (!isPageVisible) return; // 页面不可见时不更新
+
             const targetUrl = "https://finance.pae.baidu.com/vapi/v1/getquotation?group=huilv_minute&need_reverse_real=1&code=USDCNH";
             const url = PROXY_URL + targetUrl;
 
@@ -295,37 +373,51 @@
 
             xhr.onload = function () {
                 if (xhr.status === 200) {
-                    corsRetryCount = 0;
-                    const data = JSON.parse(xhr.responseText);
-                    if (data.Result && data.Result.cur && data.Result.cur.price !== undefined) {
-                        const currentRate = parseFloat(data.Result.cur.price);
-                        const ratio = parseFloat(data.Result.cur.ratio);
-                        updateRateDisplay(currentRate, ratio);
-                        if (Date.now() - lastChartUpdateTime >= 60000) {
-                            updateChart(data.Result.newMarketData);
-                            lastChartUpdateTime = Date.now();
+                    try {
+                        const data = JSON.parse(xhr.responseText);
+                        if (data.Result && data.Result.cur && data.Result.cur.price !== undefined) {
+                            consecutiveFailures = 0;
+                            corsRetryCount = 0;
+                            const currentRate = parseFloat(data.Result.cur.price);
+                            const ratio = parseFloat(data.Result.cur.ratio);
+                            updateRateDisplay(currentRate, ratio);
+                            if (Date.now() - lastChartUpdateTime >= 60000) {
+                                updateChart(data.Result.newMarketData);
+                                lastChartUpdateTime = Date.now();
+                            }
+                            if (!chartInstance) {
+                                plotChart(data.Result.newMarketData);
+                            }
+                        } else {
+                            handleError("数据格式错误");
                         }
-                        if (!chartInstance) {
-                            plotChart(data.Result.newMarketData);
-                        }
+                    } catch (e) {
+                        handleError("数据解析错误: " + e.message);
                     }
                 } else {
-                    console.log("请求失败，重试...");
-                    corsRetryCount++;
-                    if (corsRetryCount > 0) {
-                        location.reload();
-                        return;
-                    }
-                    fetchExchangeRate();
+                    handleError("HTTP错误: " + xhr.status);
                 }
             };
 
             xhr.onerror = function() {
-                console.log("网络错误，重试...");
-                fetchExchangeRate();
+                handleError("网络错误");
+            };
+
+            xhr.ontimeout = function() {
+                handleError("请求超时");
             };
 
             xhr.send();
+        }
+
+        function handleError(errorMsg) {
+            console.log(errorMsg + "，尝试恢复...");
+            consecutiveFailures++;
+            
+            if (consecutiveFailures >= MAX_CONSECUTIVE_FAILURES) {
+                console.log("连续失败次数过多，尝试重置...");
+                resetAndRestart();
+            }
         }
 
         function updateRateDisplay(currentRate, ratio) {
@@ -437,11 +529,12 @@
             requestAnimationFrame(animateRate);
             requestAnimationFrame(animateRatio);
 
-            rateContainer.classList.remove('up', 'down');
+            // 更新涨跌幅样式
+            rateChangeElement.parentElement.classList.remove('up', 'down');
             if (ratio > 0) {
-                rateContainer.classList.add('up');
+                rateChangeElement.parentElement.classList.add('up');
             } else if (ratio < 0) {
-                rateContainer.classList.add('down');
+                rateChangeElement.parentElement.classList.add('down');
             }
 
             lastRate = currentRate;
@@ -462,128 +555,155 @@
         }
 
         function updateChart(marketData) {
-            const newTimes = [];
-            const newPrices = [];
+            try {
+                const newTimes = [];
+                const newPrices = [];
 
-            marketData.marketData.forEach(item => {
-                const entries = item.p.split(';');
-                entries.forEach(entry => {
-                    const fields = entry.split(',');
-                    const time = fields[1];
-                    newTimes.push(time);
-                    newPrices.push(parseFloat(fields[2]));
+                marketData.marketData.forEach(item => {
+                    const entries = item.p.split(';');
+                    entries.forEach(entry => {
+                        const fields = entry.split(',');
+                        const time = fields[1];
+                        newTimes.push(time);
+                        newPrices.push(parseFloat(fields[2]));
+                    });
                 });
-            });
 
-            times = newTimes;
-            prices = newPrices;
+                times = newTimes;
+                prices = newPrices;
 
-            if (chartInstance) {
-                updateChartData(times, prices);
+                if (chartInstance) {
+                    updateChartData(times, prices);
+                }
+            } catch (e) {
+                console.log("更新图表错误: " + e.message);
             }
         }
 
         function plotChart(marketData) {
-            const newTimes = [];
-            const newPrices = [];
+            try {
+                const newTimes = [];
+                const newPrices = [];
 
-            marketData.marketData.forEach(item => {
-                const entries = item.p.split(';');
-                entries.forEach(entry => {
-                    const fields = entry.split(',');
-                    const time = fields[1];
-                    newTimes.push(time);
-                    newPrices.push(parseFloat(fields[2]));
+                marketData.marketData.forEach(item => {
+                    const entries = item.p.split(';');
+                    entries.forEach(entry => {
+                        const fields = entry.split(',');
+                        const time = fields[1];
+                        newTimes.push(time);
+                        newPrices.push(parseFloat(fields[2]));
+                    });
                 });
-            });
 
-            times = newTimes;
-            prices = newPrices;
+                times = newTimes;
+                prices = newPrices;
 
-            const ctx = document.getElementById('exchange-rate-chart').getContext('2d');
-            const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-            gradient.addColorStop(0, 'rgba(255, 255, 255, 0.2)');
-            gradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.1)');
-            gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+                const ctx = document.getElementById('exchange-rate-chart').getContext('2d');
+                const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+                gradient.addColorStop(0, 'rgba(255, 255, 255, 0.2)');
+                gradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.1)');
+                gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
 
-            chartInstance = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: times,
-                    datasets: [{
-                        data: prices,
-                        borderColor: '#ffffff',
-                        borderWidth: 1.5,
-                        backgroundColor: gradient,
-                        fill: true,
-                        tension: 0.4,
-                        pointRadius: 0,
-                        pointHoverRadius: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        x: { 
-                            display: true,
-                            grid: {
-                                color: 'rgba(148, 163, 184, 0.1)',
-                                borderColor: 'rgba(148, 163, 184, 0.2)'
-                            },
-                            ticks: {
-                                color: '#e2eaf5',
-                                maxRotation: 0,
-                                autoSkip: true,
-                                maxTicksLimit: 3,
-                                autoSkipPadding: 20,
-                                position: 'bottom',
-                                font: {
-                                    size: 20
+                if (chartInstance) {
+                    chartInstance.destroy();
+                }
+
+                chartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: times,
+                        datasets: [{
+                            data: prices,
+                            borderColor: '#ffffff',
+                            borderWidth: 1,
+                            backgroundColor: gradient,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 0,
+                            pointHoverRadius: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: { 
+                                display: true,
+                                grid: {
+                                    color: 'rgba(148, 163, 184, 0.1)',
+                                    borderColor: 'rgba(148, 163, 184, 0.2)'
+                                },
+                                ticks: {
+                                    color: '#e2eaf5',
+                                    maxRotation: 0,
+                                    autoSkip: true,
+                                    maxTicksLimit: 3,
+                                    autoSkipPadding: 20,
+                                    position: 'bottom',
+                                    font: {
+                                        size: 20
+                                    }
                                 }
+                            },
+                            y: { 
+                                display: true,
+                                grid: {
+                                    color: 'rgba(148, 163, 184, 0.1)',
+                                    borderColor: 'rgba(148, 163, 184, 0.2)'
+                                },
+                                ticks: {
+                                    color: '#e2eaf5',
+                                    maxTicksLimit: 3,
+                                    font: {
+                                        size: 20
+                                    },
+                                    callback: function(value) {
+                                        return value.toFixed(4);
+                                    }
+                                },
+                                min: Math.min(...prices) - 0.0002,
+                                max: Math.max(...prices) + 0.0002
                             }
                         },
-                        y: { 
-                            display: true,
-                            grid: {
-                                color: 'rgba(148, 163, 184, 0.1)',
-                                borderColor: 'rgba(148, 163, 184, 0.2)'
-                            },
-                            ticks: {
-                                color: '#e2eaf5',
-                                maxTicksLimit: 3,
-                                font: {
-                                    size: 20
-                                },
-                                callback: function(value) {
-                                    return value.toFixed(4);
-                                }
-                            },
-                            min: Math.min(...newPrices),
-                            max: Math.max(...newPrices)
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        animation: {
+                            duration: 1500,
+                            easing: 'easeInOutQuart'
                         }
-                    },
-                    plugins: {
-                        legend: { display: false }
-                    },
-                    animation: {
-                        duration: 1500,
-                        easing: 'easeInOutQuart'
                     }
+                });
+            } catch (e) {
+                console.log("绘制图表错误: " + e.message);
+                if (chartInstance) {
+                    chartInstance.destroy();
+                    chartInstance = null;
                 }
-            });
+            }
         }
 
         function updateChartData(times, prices) {
-            chartInstance.data.labels = times;
-            chartInstance.data.datasets[0].data = prices;
-            chartInstance.options.scales.y.min = Math.min(...prices);
-            chartInstance.options.scales.y.max = Math.max(...prices);
-            chartInstance.update({ duration: 1000, easing: 'easeInOutQuart' });
+            try {
+                chartInstance.data.labels = times;
+                chartInstance.data.datasets[0].data = prices;
+                chartInstance.options.scales.y.min = Math.min(...prices);
+                chartInstance.options.scales.y.max = Math.max(...prices);
+                chartInstance.update({ duration: 1000, easing: 'easeInOutQuart' });
+            } catch (e) {
+                console.log("更新图表数据错误: " + e.message);
+                resetAndRestart();
+            }
         }
 
-        setInterval(fetchExchangeRate, 5000);
-        fetchExchangeRate();
+        // 添加全局错误处理
+        window.onerror = function(msg, url, line, col, error) {
+            console.log("全局错误: ", msg);
+            return false;
+        };
+
+        // 启动应用
+        startFetching();
         setInterval(updateTimeDisplay, 1000);
     </script>
 </body>
