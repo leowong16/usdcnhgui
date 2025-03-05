@@ -360,14 +360,13 @@
         let lastRate = null;
         let lastRateTimestamp = 0;
         let lastChartUpdateTime = Date.now();
-        let corsRetryCount = 0;
+        let fetchInterval = null;
         let consecutiveFailures = 0;
-        let fetchInterval;
-        const MAX_CONSECUTIVE_FAILURES = 5;  // 增加最大失败次数
+        const MAX_CONSECUTIVE_FAILURES = 5;
         const FETCH_INTERVAL = 5000;
         let chartLoadingTimeout = null;
 
-        const PROXY_URL = "https://bdfn.2504588133.workers.dev/";
+        const API_URL = "https://bdfn.2504588133.workers.dev/";
 
         function showChartLoading() {
             const loadingElement = document.getElementById('chart-loading');
@@ -385,7 +384,6 @@
                 clearTimeout(chartLoadingTimeout);
             }
             consecutiveFailures = 0;
-            corsRetryCount = 0;
             times = [];
             prices = [];
             
@@ -402,56 +400,39 @@
             }, 1000);
         }
 
+        async function fetchExchangeRate() {
+            try {
+                const response = await fetch(API_URL);
+                if (!response.ok) {
+                    throw new Error(`HTTP错误: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                if (data.Result && data.Result.cur && data.Result.cur.price !== undefined) {
+                    consecutiveFailures = 0;
+                    const currentRate = parseFloat(data.Result.cur.price);
+                    const ratio = parseFloat(data.Result.cur.ratio);
+                    updateRateDisplay(currentRate, ratio);
+                    
+                    if (Date.now() - lastChartUpdateTime >= 60000) {
+                        updateChart(data.Result.newMarketData);
+                        lastChartUpdateTime = Date.now();
+                    }
+                    
+                    if (!chartInstance) {
+                        plotChart(data.Result.newMarketData);
+                    }
+                } else {
+                    throw new Error("数据格式错误");
+                }
+            } catch (error) {
+                handleError(error.message);
+            }
+        }
+
         function startFetching() {
             fetchExchangeRate(); // 立即执行一次
             fetchInterval = setInterval(fetchExchangeRate, FETCH_INTERVAL);
-        }
-
-        function fetchExchangeRate() {
-            const targetUrl = "https://finance.pae.baidu.com/vapi/v1/getquotation?group=huilv_minute&need_reverse_real=1&code=USDCNH";
-            const url = PROXY_URL + targetUrl;
-
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', url, true);
-            xhr.timeout = 4000;
-
-            xhr.onload = function () {
-                if (xhr.status === 200) {
-                    try {
-                        const data = JSON.parse(xhr.responseText);
-                        if (data.Result && data.Result.cur && data.Result.cur.price !== undefined) {
-                            consecutiveFailures = 0;
-                            corsRetryCount = 0;
-                            const currentRate = parseFloat(data.Result.cur.price);
-                            const ratio = parseFloat(data.Result.cur.ratio);
-                            updateRateDisplay(currentRate, ratio);
-                            if (Date.now() - lastChartUpdateTime >= 60000) {
-                                updateChart(data.Result.newMarketData);
-                                lastChartUpdateTime = Date.now();
-                            }
-                            if (!chartInstance) {
-                                plotChart(data.Result.newMarketData);
-                            }
-                        } else {
-                            handleError("数据格式错误");
-                        }
-                    } catch (e) {
-                        handleError("数据解析错误: " + e.message);
-                    }
-                } else {
-                    handleError("HTTP错误: " + xhr.status);
-                }
-            };
-
-            xhr.onerror = function() {
-                handleError("网络错误");
-            };
-
-            xhr.ontimeout = function() {
-                handleError("请求超时");
-            };
-
-            xhr.send();
         }
 
         function handleError(errorMsg) {
@@ -465,7 +446,8 @@
             } else {
                 // 显示重试信息
                 const loadingElement = document.getElementById('chart-loading');
-                loadingElement.textContent = `图表加载中... (重试 ${consecutiveFailures}/${MAX_CONSECUTIVE_FAILURES})`;
+                loadingElement.textContent = `加载中... (重试 ${consecutiveFailures}/${MAX_CONSECUTIVE_FAILURES})`;
+                loadingElement.classList.add('visible');
             }
         }
 
@@ -744,7 +726,7 @@
                 chartInstance.update({ duration: 1000, easing: 'easeInOutQuart' });
             } catch (e) {
                 console.log("更新图表数据错误: " + e.message);
-                resetAndRestart();
+                startFetching();
             }
         }
 
@@ -757,6 +739,13 @@
         // 启动应用
         startFetching();
         setInterval(updateTimeDisplay, 1000);
+
+        // 页面关闭时清理定时器
+        window.addEventListener('beforeunload', () => {
+            if (fetchInterval) {
+                clearInterval(fetchInterval);
+            }
+        });
     </script>
 </body>
 </html>
