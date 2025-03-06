@@ -168,7 +168,7 @@
         /* 涨跌幅指示器样式 */
         .rate-change {
             font-weight: 550;
-            padding: 1px 16px;              /* 内边距：上下4px，左右16px */
+            padding: 0px 10px;              /* 内边距：上下4px，左右16px */
             border-radius: 9999px;          /* 圆角 */
             transition: all 0.3s ease;
             font-size: 40px;                /* 减小字体大小 */
@@ -227,7 +227,7 @@
             padding: 1px;                   /* 内边距 */
             font-size: 40px;                /* 字体大小 */
             color: var(--text-secondary);
-            letter-spacing: 0.05em;         /* 字间距 */
+            letter-spacing: 0.02em;         /* 字间距 */
             box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.2);  /* 阴影效果 */
             z-index: 20;                    /* 确保显示在最上层 */
             width: 100%;                    /* 全宽 */
@@ -331,7 +331,7 @@
         let isPageVisible = true;
         let fetchInterval;
         const MAX_CONSECUTIVE_FAILURES = 3;
-        const FETCH_INTERVAL = 5000;
+        const FETCH_INTERVAL = 8000;
 
         const PROXY_URL = "https://bdfn.2504588133.workers.dev/";
 
@@ -371,7 +371,7 @@
 
             var xhr = new XMLHttpRequest();
             xhr.open('GET', url, true);
-            xhr.timeout = 3000;
+            xhr.timeout = 4000;
 
             xhr.onload = function () {
                 if (xhr.status === 200) {
