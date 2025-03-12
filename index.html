@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>USD/CNH 实时汇率</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
         /* 根变量定义 - 用于主题颜色和透明度 */
         :root {
@@ -12,7 +13,7 @@
             --text-secondary: #b1b5ba;      /* 次要文字颜色 */
             --accent-up: #10b981;          /* 上涨颜色 */
             --accent-down: #ef4444;        /* 下跌颜色 */
-            --border-color: rgb(0, 0, 0);  /* 边框颜色 */
+            --border-color: rgba(148, 163, 184, 0.6);  /* 边框颜色 */
             --glass-bg: rgba(15, 23, 42, 0.7);        /* 毛玻璃背景色 */
         }
 
@@ -25,7 +26,7 @@
 
         /* 页面主体样式 */
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Space Grotesk', sans-serif;
             background:#0f172a;
             color: var(--text-primary);
             min-height: 100vh;              /* 最小高度为视口高度 */
@@ -52,8 +53,11 @@
             top: 50%;                       /* 垂直居中 */
             left: 50%;                      /* 水平居中 */
             transform: translate(-50%, -45%); /* 调整位置，将-40%改为-60%使其上移 */
-            overflow: hidden;
-            padding: 0px 10px;
+            overflow: visible;              /* 改为visible允许内容溢出 */
+            width: 100vw;                   /* 使用视口宽度 */
+            display: flex;                  /* 使用flex布局 */
+            justify-content: center;        /* 水平居中 */
+            align-items: center;            /* 垂直居中 */
         }
 
         .light-effect {
@@ -167,7 +171,7 @@
         /* 涨跌幅指示器样式 */
         .rate-change {
             font-weight: 550;
-            padding: 0px 10px;              /* 内边距：上下0px，左右10px */
+            padding: 0px 10px;              /* 内边距：上下4px，左右16px */
             border-radius: 9999px;          /* 圆角 */
             transition: all 0.3s ease;
             font-size: 40px;                /* 减小字体大小 */
