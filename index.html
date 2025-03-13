@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,13 +9,20 @@
     <style>
         /* 根变量定义 - 用于主题颜色和透明度 */
         :root {
-            --bg-primary: #0f172a;          /* 主背景色 */
-            --text-primary: #e2e8f0;        /* 主要文字颜色 */
-            --text-secondary: #b1b5ba;      /* 次要文字颜色 */
-            --accent-up: #10b981;          /* 上涨颜色 */
-            --accent-down: #ef4444;        /* 下跌颜色 */
-            --border-color: rgba(148, 163, 184, 0.6);  /* 边框颜色 */
-            --glass-bg: rgba(15, 23, 42, 0.7);        /* 毛玻璃背景色 */
+            --bg-primary: #0f172a;
+            /* 主背景色 */
+            --text-primary: #e2e8f0;
+            /* 主要文字颜色 */
+            --text-secondary: #b1b5ba;
+            /* 次要文字颜色 */
+            --accent-up: #10b981;
+            /* 上涨颜色 */
+            --accent-down: #ef4444;
+            /* 下跌颜色 */
+            --border-color: rgba(148, 163, 184, 0.6);
+            /* 边框颜色 */
+            --glass-bg: rgba(15, 23, 42, 0.7);
+            /* 毛玻璃背景色 */
         }
 
         /* 基础样式重置 */
@@ -27,9 +35,10 @@
         /* 页面主体样式 */
         body {
             font-family: 'Space Grotesk', sans-serif;
-            background:#0f172a;
+            background: #0f172a;
             color: var(--text-primary);
-            min-height: 100vh;              /* 最小高度为视口高度 */
+            min-height: 100vh;
+            /* 最小高度为视口高度 */
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -37,10 +46,13 @@
 
         /* 仪表板容器 - 居中布局 */
         .dashboard-container {
-            flex-grow: 1;                   /* 占据剩余空间 */
+            flex-grow: 1;
+            /* 占据剩余空间 */
             display: grid;
-            place-items: center;            /* 内容居中 */
-            position: relative;             /* 作为定位参考 */
+            place-items: center;
+            /* 内容居中 */
+            position: relative;
+            /* 作为定位参考 */
         }
 
         /* 汇率显示容器 */
@@ -48,16 +60,24 @@
             background: transparent;
             backdrop-filter: none;
             border: none;
-            z-index: 10;                    /* 确保显示在图表上层 */
-            position: absolute;             /* 绝对定位 */
-            top: 50%;                       /* 垂直居中 */
-            left: 50%;                      /* 水平居中 */
-            transform: translate(-50%, -45%); /* 调整位置，将-40%改为-60%使其上移 */
-            overflow: visible;              /* 改为visible允许内容溢出 */
-            width: 100vw;                   /* 使用视口宽度 */
-            display: flex;                  /* 使用flex布局 */
-            justify-content: center;        /* 水平居中 */
-            align-items: center;            /* 垂直居中 */
+            z-index: 10;
+            /* 确保显示在图表上层 */
+            position: absolute;
+            /* 绝对定位 */
+            top: 50%;
+            /* 垂直居中 */
+            left: 50%;
+            /* 水平居中 */
+            transform: translate(-50%, -45%);
+            /* 调整位置，将-40%改为-60%使其上移 */
+            width: 100vw;
+            /* 使用视口宽度 */
+            display: flex;
+            /* 使用flex布局 */
+            justify-content: center;
+            /* 水平居中 */
+            align-items: center;
+            /* 垂直居中 */
         }
 
         .light-effect {
@@ -81,7 +101,7 @@
         }
 
         .light-effect.stable {
-            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.15), transparent);
+            background: rgba(255, 255, 255, 0.15);
             animation: fadeInOut 1.2s ease-out forwards;
         }
 
@@ -89,12 +109,15 @@
             0% {
                 opacity: 0;
             }
+
             20% {
                 opacity: 0.8;
             }
+
             80% {
                 opacity: 0.8;
             }
+
             100% {
                 opacity: 0;
             }
@@ -105,17 +128,21 @@
                 transform: translateY(100%);
                 opacity: 0;
             }
+
             10% {
                 opacity: 0;
             }
+
             20% {
                 opacity: 0.8;
             }
+
             80% {
                 opacity: 0.8;
             }
+
             100% {
-                transform: translateY(-100%);
+                transform: translateY(-150%);
                 opacity: 0;
             }
         }
@@ -125,24 +152,28 @@
                 transform: translateY(-100%);
                 opacity: 0;
             }
+
             10% {
                 opacity: 0;
             }
+
             20% {
                 opacity: 0.8;
             }
+
             80% {
                 opacity: 0.8;
             }
+
             100% {
-                transform: translateY(100%);
+                transform: translateY(150%);
                 opacity: 0;
             }
         }
 
         /* 汇率数字样式 */
         .exchange-rate {
-            font-size: 180px;  
+            font-size: 180px;
             font-weight: 520;
             text-align: center;
             background: none;
@@ -150,7 +181,8 @@
             background-clip: initial;
             color: var(--text-primary);
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            font-variant-numeric: tabular-nums;    /* 等宽数字 */
+            font-variant-numeric: tabular-nums;
+            /* 等宽数字 */
             opacity: 0.7;
         }
 
@@ -159,7 +191,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-top: -30px;               /* 减小上边距，使用负值使元素向上移动 */
+            margin-top: -30px;
+            /* 减小上边距，使用负值使元素向上移动 */
             color: var(--text-secondary);
         }
 
@@ -171,22 +204,28 @@
         /* 涨跌幅指示器样式 */
         .rate-change {
             font-weight: 550;
-            padding: 0px 10px;              /* 内边距：上下4px，左右16px */
-            border-radius: 9999px;          /* 圆角 */
+            padding: 0px 10px;
+            /* 内边距：上下4px，左右16px */
+            border-radius: 9999px;
+            /* 圆角 */
             transition: all 0.3s ease;
-            font-size: 40px;                /* 减小字体大小 */
+            font-size: 40px;
+            /* 减小字体大小 */
             position: relative;
-            padding-left: 40px;             /* 左侧留出箭头空间 */
+            padding-left: 40px;
+            /* 左侧留出箭头空间 */
         }
 
         /* 涨跌箭头样式 */
         .rate-change::before {
             content: '';
             position: absolute;
-            left: 10px;                     /* 箭头位置 */
+            left: 10px;
+            /* 箭头位置 */
             top: 50%;
             transform: translateY(-50%);
-            border-left: 12px solid transparent;    /* 增加箭头大小 */
+            border-left: 12px solid transparent;
+            /* 增加箭头大小 */
             border-right: 12px solid transparent;
             transition: all 0.3s ease;
         }
@@ -213,55 +252,81 @@
 
         /* 图表画布样式 */
         canvas {
-            position: absolute;             /* 绝对定位 */
-            top: 0;                         /* 从顶部开始 */
-            left: 0;                      /* 水平居中 */
-            z-index: 1;                     /* 层级 */
-            margin: 5px 10px 45px 5px;     /* 上右下左边距 */
+            position: absolute;
+            /* 绝对定位 */
+            top: 0;
+            /* 从顶部开始 */
+            left: 0;
+            /* 水平居中 */
+            z-index: 1;
+            /* 层级 */
+            margin: 5px 10px 45px 5px;
+            /* 上右下左边距 */
         }
 
         /* 时间显示样式 */
         .time-display {
-            position: fixed;                /* 固定定位 */
-            bottom: 0;                      /* 固定在底部 */
-            left: 0;                        /* 左对齐 */
-            right: 0;                       /* 右对齐 */
+            position: fixed;
+            /* 固定定位 */
+            bottom: 0;
+            /* 固定在底部 */
+            left: 0;
+            /* 左对齐 */
+            right: 0;
+            /* 右对齐 */
             background: var(--glass-bg);
-            padding: 1px;                   /* 内边距 */
-            font-size: 40px;                /* 字体大小 */
+            padding: 1px;
+            /* 内边距 */
+            font-size: 40px;
+            /* 字体大小 */
             color: var(--text-secondary);
-            letter-spacing: 0.02em;         /* 字间距 */
-            box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.2);  /* 阴影效果 */
-            z-index: 20;                    /* 确保显示在最上层 */
-            width: 100%;                    /* 全宽 */
-            height: 48px;                   /* 固定高度 */
+            letter-spacing: 0.02em;
+            /* 字间距 */
+            box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.2);
+            /* 阴影效果 */
+            z-index: 20;
+            /* 确保显示在最上层 */
+            width: 100%;
+            /* 全宽 */
+            height: 48px;
+            /* 固定高度 */
             display: flex;
             align-items: center;
-            justify-content: flex-start;    /* 改为左对齐 */
-            border-radius: 0;               /* 移除圆角 */
+            justify-content: flex-start;
+            /* 改为左对齐 */
+            border-radius: 0;
+            /* 移除圆角 */
         }
 
         .time-display .time {
-            margin-right: 10px;             /* 时间右侧间距 */
+            margin-right: 10px;
+            /* 时间右侧间距 */
         }
 
         .time-display .rate-change {
-            font-size: 40px;                /* 与时间相同大小 */
+            font-size: 40px;
+            /* 与时间相同大小 */
             font-weight: 550;
-            padding: 0 12px;                /* 减小内边距 */
-            border-radius: 8px;             /* 减小圆角 */
+            padding: 0 12px;
+            /* 减小内边距 */
+            border-radius: 8px;
+            /* 减小圆角 */
             transition: all 0.3s ease;
             position: fixed;
             right: 0;
-            padding-left: 32px;             /* 减小左侧箭头空间 */
-            height: 36px;                   /* 固定高度 */
-            line-height: 36px;              /* 行高等于高度，垂直居中 */
+            padding-left: 32px;
+            /* 减小左侧箭头空间 */
+            height: 36px;
+            /* 固定高度 */
+            line-height: 36px;
+            /* 行高等于高度，垂直居中 */
         }
 
         .time-display .rate-change::before {
             content: '';
             position: absolute;
-            left: 8px;                      /* 调整箭头位置 */
+            left: 8px;
+            /* 调整箭头位置 */
             top: 50%;
             transform: translateY(-50%);
             border-left: 12px solid transparent;
@@ -292,19 +357,23 @@
         /* 背景网格样式 */
         .background-grid {
             position: fixed;
-            inset: 0;                       /* 填充整个视口 */
-            background-image: 
+            inset: 0;
+            /* 填充整个视口 */
+            background-image:
                 linear-gradient(to right, var(--border-color) 1px, transparent 1px),
                 linear-gradient(to bottom, var(--border-color) 1px, transparent 1px);
-            background-size: 40px 40px;     /* 网格大小 */
-            opacity: 0.1;                   /* 透明度 */
-            z-index: 0;                     /* 最底层 */
-            pointer-events: none;           /* 不影响交互 */
+            background-size: 40px 40px;
+            /* 网格大小 */
+            opacity: 0.1;
+            /* 透明度 */
+            z-index: 0;
+            /* 最底层 */
+            pointer-events: none;
+            /* 不影响交互 */
         }
-
-
     </style>
 </head>
+
 <body>
     <div class="background-grid"></div>
     <div class="dashboard-container">
@@ -339,7 +408,7 @@
         const PROXY_URL = "https://bdfn.2504588133.workers.dev/";
 
         // 检测页面可见性变化
-        document.addEventListener('visibilitychange', function() {
+        document.addEventListener('visibilitychange', function () {
             isPageVisible = !document.hidden;
             if (isPageVisible) {
                 console.log("页面重新可见，重新初始化...");
@@ -404,11 +473,11 @@
                 }
             };
 
-            xhr.onerror = function() {
+            xhr.onerror = function () {
                 handleError("网络错误");
             };
 
-            xhr.ontimeout = function() {
+            xhr.ontimeout = function () {
                 handleError("请求超时");
             };
 
@@ -418,7 +487,7 @@
         function handleError(errorMsg) {
             console.log(errorMsg + "，尝试恢复...");
             consecutiveFailures++;
-            
+
             if (consecutiveFailures >= MAX_CONSECUTIVE_FAILURES) {
                 console.log("连续失败次数过多，尝试重置...");
                 resetAndRestart();
@@ -632,7 +701,7 @@
                         responsive: true,
                         maintainAspectRatio: false,
                         scales: {
-                            x: { 
+                            x: {
                                 display: true,
                                 grid: {
                                     color: 'rgba(148, 163, 184, 0.1)',
@@ -650,7 +719,7 @@
                                     }
                                 }
                             },
-                            y: { 
+                            y: {
                                 display: true,
                                 grid: {
                                     color: 'rgba(148, 163, 184, 0.1)',
@@ -662,7 +731,7 @@
                                     font: {
                                         size: 20
                                     },
-                                    callback: function(value) {
+                                    callback: function (value) {
                                         return value.toFixed(4);
                                     }
                                 },
@@ -702,7 +771,7 @@
         }
 
         // 添加全局错误处理
-        window.onerror = function(msg, url, line, col, error) {
+        window.onerror = function (msg, url, line, col, error) {
             console.log("全局错误: ", msg);
             return false;
         };
@@ -712,4 +781,5 @@
         setInterval(updateTimeDisplay, 1000);
     </script>
 </body>
+
 </html>
