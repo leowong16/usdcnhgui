@@ -354,6 +354,35 @@
             background: rgba(16, 185, 129, 0.3);
         }
 
+        /* 右上角汇率类型指示器 */
+        .currency-type {
+            position: fixed;
+            top: 10px;
+            right: 0px;
+            font-size: 36px;
+            font-weight: 520;
+            padding: 0 10px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            height: 36px;
+            line-height: 36px;
+            z-index: 20;
+        }
+
+        .currency-type::before {
+            display: none;
+        }
+
+        .up .currency-type {
+            color: var(--accent-down);
+            background: rgba(239, 68, 68, 0.3);
+        }
+
+        .down .currency-type {
+            color: var(--accent-up);
+            background: rgba(16, 185, 129, 0.3);
+        }
+
         /* 背景网格样式 */
         .background-grid {
             position: fixed;
@@ -383,6 +412,9 @@
             <div class="light-effect" id="light-effect-2"></div>
             <div class="light-effect" id="light-effect-3"></div>
             <div class="exchange-rate" id="exchange-rate">加载中...</div>
+        </div>
+        <div id="currency-type-container" class="down">
+            <span class="currency-type">USD-CNH</span>
         </div>
     </div>
     <div class="time-display">
@@ -501,6 +533,7 @@
             const rateElement = document.getElementById("exchange-rate");
             const rateChangeElement = document.getElementById("rate-change");
             const rateContainer = document.querySelector(".rate-container");
+            const currencyTypeContainer = document.getElementById("currency-type-container");
             const lightEffects = [
                 document.getElementById("light-effect-1"),
                 document.getElementById("light-effect-2"),
@@ -605,10 +638,13 @@
 
             // 更新涨跌幅样式
             rateChangeElement.parentElement.classList.remove('up', 'down');
+            currencyTypeContainer.classList.remove('up', 'down');
             if (ratio > 0) {
                 rateChangeElement.parentElement.classList.add('up');
+                currencyTypeContainer.classList.add('up');
             } else if (ratio < 0) {
                 rateChangeElement.parentElement.classList.add('down');
+                currencyTypeContainer.classList.add('down');
             }
 
             lastRate = currentRate;
